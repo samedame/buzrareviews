@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
 type PlaceResult = {
@@ -19,6 +20,7 @@ export default function OnboardingPage() {
   const [ownerPhone, setOwnerPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [createdBusinessId, setCreatedBusinessId] = useState<string | null>(null);
 
   async function handleSearch(event: FormEvent) {
     event.preventDefault();
@@ -82,6 +84,7 @@ export default function OnboardingPage() {
         );
       }
 
+      setCreatedBusinessId(data.business.id);
       setStep("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -218,6 +221,16 @@ export default function OnboardingPage() {
               {selected.displayName} is now registered with BuzraReviews. We&apos;ll start
               polling for new Google reviews and drafting replies for you to approve.
             </p>
+            {createdBusinessId && (
+              <Link
+                href={`/customers?businessId=${encodeURIComponent(
+                  createdBusinessId
+                )}&businessName=${encodeURIComponent(selected.displayName)}`}
+                className="mt-6 inline-block rounded-md bg-gray-900 px-5 py-2.5 text-white"
+              >
+                Add your customers
+              </Link>
+            )}
           </div>
         )}
       </div>
