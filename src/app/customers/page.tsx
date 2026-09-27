@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 
 type AddedCustomer = {
@@ -21,11 +22,16 @@ export default function CustomersPage() {
   // onboarding "done" step) without next/navigation's useSearchParams, so
   // this page doesn't need a Suspense boundary to stay statically prerendered.
   useEffect(() => {
+    // Reading a browser-only API (the URL) after mount and syncing it into
+    // state is the correct pattern here -- it's what keeps server and
+    // client's initial render identical and avoids a hydration mismatch.
+    /* eslint-disable react-hooks/set-state-in-effect */
     const params = new URLSearchParams(window.location.search);
     const id = params.get("businessId");
     const name = params.get("businessName");
     if (id) setBusinessId(id);
     if (name) setBusinessName(name);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   async function handleSubmit(event: FormEvent) {
@@ -81,6 +87,19 @@ export default function CustomersPage() {
             ? `Adding customers for ${businessName}. Each one gets an immediate review-request email.`
             : "Each customer you add gets an immediate review-request email."}
         </p>
+
+        {businessId && (
+          <p className="mt-2 text-center text-sm">
+            <Link
+              href={`/dashboard?businessId=${encodeURIComponent(businessId)}&businessName=${encodeURIComponent(
+                businessName
+              )}`}
+              className="text-gray-600 underline"
+            >
+              View dashboard
+            </Link>
+          </p>
+        )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
