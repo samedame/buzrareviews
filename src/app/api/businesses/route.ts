@@ -2,19 +2,36 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchBusiness, reviewLinkFor } from '@/lib/places';
 import { supabaseAdmin } from '@/lib/supabase';
 
-// GET /api/businesses?q=<search text>
-// Looks up candidate businesses via Google Places so onboarding can pick
-// the right one before creating a business record.
+// GET /api/businesses?id=<business id>        -> a single business
+// GET /api/businesses?q=<search text>          -> Google Places candidates
+// The id lookup backs the dashboard (subscription status, name); the q
+// lookup backs onboarding, so the owner can pick the right business before
+// a record is created.
 export async function GET(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get('id');
+  if (id) {
+    const { data, error } = await supabaseAdmin
+      .from('businesses')
+      .select('id, name, owner_email, subscription_status')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      return NextResponse.json({ error: 'Business not found' }, { status: 404 });
+    }
+    return NextResponse.json({ business: data });
+  }
+
   const q = req.nextUrl.searchParams.get('q');
   if (!q) {
-    return NextResponse.json({ error: 'Missing ?q= search query' }, { status: 400 });
+    return NextResponse.json({ error: 'Missing ?q= search query or ?id=' }, { status: 400 });
   }
   try {
     const results = await searchBusiness(q);
     return NextResponse.json({ results });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Search failed';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

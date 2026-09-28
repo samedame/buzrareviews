@@ -59,3 +59,10 @@ alter table businesses enable row level security;
 alter table customers enable row level security;
 alter table review_requests enable row level security;
 alter table reviews enable row level security;
+
+-- v1.1: Stripe billing ($29/mo, 14-day free trial). Columns are nullable --
+-- a null subscription_status means "never subscribed". Idempotent, so it's
+-- safe to re-run this whole file against a database that already has these.
+alter table businesses add column if not exists stripe_customer_id text;
+alter table businesses add column if not exists stripe_subscription_id text;
+alter table businesses add column if not exists subscription_status text;

@@ -35,6 +35,10 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [justSubscribed, setJustSubscribed] = useState(false);
 
   const loadReviews = useCallback(async (id: string) => {
     if (!id.trim()) {
@@ -61,6 +65,20 @@ export default function DashboardPage() {
     }
   }, []);
 
+  // Best-effort: the dashboard still works if this fails, it just won't
+  // know whether to show "Subscribe" or the trial/active state.
+  const loadBusiness = useCallback(async (id: string) => {
+    try {
+      const response = await fetch(`/api/businesses?id=${encodeURIComponent(id.trim())}`);
+      const data = await response.json();
+      if (response.ok) {
+        setSubscriptionStatus(data.business.subscription_status ?? null);
+      }
+    } catch {
+      // Non-critical -- leave subscriptionStatus as-is.
+    }
+  }, []);
+
   // Read businessId/businessName from the URL (e.g. a link from the
   // customers page) without next/navigation's useSearchParams, so this
   // page doesn't need a Suspense boundary to stay statically prerendered.
@@ -68,9 +86,9 @@ export default function DashboardPage() {
     // Reading a browser-only API (the URL) after mount and syncing it into
     // state is the correct pattern here -- it's what keeps server and
     // client's initial render identical and avoids a hydration mismatch.
-    // loadReviews is intentionally omitted from deps: it's stable (useCallback,
-    // no changing deps) and re-running this effect on every render would
-    // re-trigger the fetch.
+    // loadReviews/loadBusiness are intentionally omitted from deps: they're
+    // stable (useCallback, no changing deps) and re-running this effect on
+    // every render would re-trigger the fetches.
     /* eslint-disable react-hooks/set-state-in-effect */
     const params = new URLSearchParams(window.location.search);
     const id = params.get("businessId");
@@ -79,7 +97,9 @@ export default function DashboardPage() {
     if (id) {
       setBusinessId(id);
       loadReviews(id);
+      loadBusiness(id);
     }
+    if (params.get("subscribed") === "true") setJustSubscribed(true);
     /* eslint-enable react-hooks/set-state-in-effect */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -95,6 +115,32 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleSubscribe() {
+    if (!businessId) return;
+    setCheckoutError(null);
+    setCheckoutLoading(true);
+
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessId }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Couldn't start checkout.");
+      }
+
+      window.location.href = data.url;
+    } catch (err) {
+      setCheckoutError(err instanceof Error ? err.message : "Something went wrong.");
+      setCheckoutLoading(false);
+    }
+  }
+
+  const isSubscribed = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+
   return (
     <main className="min-h-screen bg-white">
       <div className="mx-auto w-full max-w-2xl px-6 py-12">
@@ -109,6 +155,7 @@ export default function DashboardPage() {
           onSubmit={(event) => {
             event.preventDefault();
             loadReviews(businessId);
+            loadBusiness(businessId);
           }}
           className="mt-6 flex gap-2"
         >
@@ -140,6 +187,38 @@ export default function DashboardPage() {
               Add another customer
             </Link>
           </p>
+        )}
+
+        {businessId && (
+          <div className="mt-6 rounded-md border border-gray-200 px-4 py-4 text-center">
+            {justSubscribed && (
+              <p className="mb-2 text-sm font-medium text-green-700">
+                Thanks for subscribing — your 14-day free trial has started.
+              </p>
+            )}
+
+            {isSubscribed ? (
+              <p className="text-sm text-gray-600">
+                {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} — $29/mo
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-gray-600">
+                  Subscribe for $29/mo to keep review checks and AI-drafted replies running.
+                  14-day free trial, cancel anytime.
+                </p>
+                <button
+                  onClick={handleSubscribe}
+                  disabled={checkoutLoading}
+                  className="mt-3 rounded-md bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
+                >
+                  {checkoutLoading ? "Redirecting…" : "Subscribe — $29/mo"}
+                </button>
+              </>
+            )}
+
+            {checkoutError && <p className="mt-2 text-sm text-red-600">{checkoutError}</p>}
+          </div>
         )}
 
         {error && <p className="mt-4 text-sm text-red-600 text-center">{error}</p>}
