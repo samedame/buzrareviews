@@ -52,6 +52,10 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     status = 'failed';
+    // This was silently swallowed before, so a failed send left nothing to
+    // debug. Resend's error (bad/unverified sending domain, invalid API
+    // key, rate limit, etc.) now shows up in Vercel's function logs.
+    console.error(`Review-request email failed for customer ${customer.id}:`, err);
   }
 
   await supabaseAdmin.from('review_requests').insert({
