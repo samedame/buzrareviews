@@ -21,7 +21,7 @@ export async function sendReviewRequestEmail(opts: {
     html: `
       <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto;">
         <p>${greeting}</p>
-        <p>Thanks for visiting ${businessName}! We'd really appreciate it if you could leave us a quick Google review — it takes less than a minute and helps a small business a lot.</p>
+        <p>Thanks for visiting ${businessName}! We'd really appreciate it if you could leave us a quick Google review. It takes less than a minute and helps a small business a lot.</p>
         <p style="text-align: center; margin: 24px 0;">
           <a href="${reviewLink}" style="display:inline-block;padding:12px 24px;background:#111827;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">
             Leave a review

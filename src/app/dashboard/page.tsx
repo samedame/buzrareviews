@@ -13,6 +13,12 @@ type Review = {
   owner_replied: boolean;
 };
 
+type Business = {
+  id: string;
+  name: string;
+  subscription_status: string | null;
+};
+
 function formatDate(value: string | null): string {
   if (!value) return "";
   return new Date(value).toLocaleDateString(undefined, {
@@ -40,44 +46,66 @@ export default function DashboardPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [justSubscribed, setJustSubscribed] = useState(false);
 
-  const loadReviews = useCallback(async (id: string) => {
-    if (!id.trim()) {
-      setError("Enter a business ID.");
-      return;
+  // Looks up the business itself (name + subscription status). Throws with
+  // a clear, user-facing message on a 404 so the caller can distinguish
+  // "this business ID doesn't exist" from "it exists but has no reviews yet".
+  const loadBusiness = useCallback(async (id: string): Promise<Business> => {
+    const response = await fetch(`/api/businesses?id=${encodeURIComponent(id.trim())}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      const message =
+        data.error === "Business not found"
+          ? "We couldn't find a business with that ID. Double check the link from your confirmation email, or the ID you were given when you signed up."
+          : (data.error ?? "Couldn't load that business.");
+      throw new Error(message);
     }
-    setError(null);
-    setLoading(true);
 
-    try {
-      const response = await fetch(`/api/reviews?businessId=${encodeURIComponent(id.trim())}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Couldn't load reviews.");
-      }
-
-      setReviews(data.reviews);
-      setHasLoaded(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+    return data.business as Business;
   }, []);
 
-  // Best-effort: the dashboard still works if this fails, it just won't
-  // know whether to show "Subscribe" or the trial/active state.
-  const loadBusiness = useCallback(async (id: string) => {
-    try {
-      const response = await fetch(`/api/businesses?id=${encodeURIComponent(id.trim())}`);
-      const data = await response.json();
-      if (response.ok) {
-        setSubscriptionStatus(data.business.subscription_status ?? null);
-      }
-    } catch {
-      // Non-critical -- leave subscriptionStatus as-is.
+  const loadReviews = useCallback(async (id: string): Promise<Review[]> => {
+    const response = await fetch(`/api/reviews?businessId=${encodeURIComponent(id.trim())}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error ?? "Couldn't load reviews.");
     }
+
+    return data.reviews as Review[];
   }, []);
+
+  // Runs both lookups together so "Load" always has one clear outcome:
+  // a business that was found (name + subscription status + its reviews,
+  // even if that list is empty), or one clear error explaining why nothing
+  // loaded. Never leaves the page in a state where it's unclear whether
+  // anything happened.
+  const loadDashboard = useCallback(
+    async (id: string) => {
+      if (!id.trim()) {
+        setError("Enter a business ID.");
+        return;
+      }
+      setError(null);
+      setLoading(true);
+      setHasLoaded(false);
+
+      try {
+        const business = await loadBusiness(id);
+        setBusinessName(business.name ?? "");
+        setSubscriptionStatus(business.subscription_status ?? null);
+
+        const reviewList = await loadReviews(id);
+        setReviews(reviewList);
+        setHasLoaded(true);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loadBusiness, loadReviews]
+  );
 
   // Read businessId/businessName from the URL (e.g. a link from the
   // customers page) without next/navigation's useSearchParams, so this
@@ -86,9 +114,9 @@ export default function DashboardPage() {
     // Reading a browser-only API (the URL) after mount and syncing it into
     // state is the correct pattern here -- it's what keeps server and
     // client's initial render identical and avoids a hydration mismatch.
-    // loadReviews/loadBusiness are intentionally omitted from deps: they're
-    // stable (useCallback, no changing deps) and re-running this effect on
-    // every render would re-trigger the fetches.
+    // loadDashboard is intentionally omitted from deps: it's stable
+    // (useCallback, no changing deps) and re-running this effect on every
+    // render would re-trigger the fetch.
     /* eslint-disable react-hooks/set-state-in-effect */
     const params = new URLSearchParams(window.location.search);
     const id = params.get("businessId");
@@ -96,8 +124,7 @@ export default function DashboardPage() {
     if (name) setBusinessName(name);
     if (id) {
       setBusinessId(id);
-      loadReviews(id);
-      loadBusiness(id);
+      loadDashboard(id);
     }
     if (params.get("subscribed") === "true") setJustSubscribed(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -111,7 +138,7 @@ export default function DashboardPage() {
       setCopiedId(review.id);
       setTimeout(() => setCopiedId((current) => (current === review.id ? null : current)), 2000);
     } catch {
-      setError("Couldn't copy to clipboard — select and copy the text manually.");
+      setError("Couldn't copy to clipboard. Select and copy the text manually instead.");
     }
   }
 
@@ -145,17 +172,18 @@ export default function DashboardPage() {
     <main className="min-h-screen bg-white">
       <div className="mx-auto w-full max-w-2xl px-6 py-12">
         <h1 className="text-2xl font-semibold text-gray-900 text-center">
-          {businessName ? `${businessName} — Reviews` : "Reviews"}
+          {businessName ? `${businessName} Reviews` : "Reviews"}
         </h1>
         <p className="mt-2 text-gray-600 text-center">
-          New reviews and AI-drafted replies show up here after each daily check.
+          Here&apos;s how it works: once a day, we check Google for new reviews of your
+          business and draft a reply to each one. Anything found shows up on this page for
+          you to copy into Google yourself.
         </p>
 
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            loadReviews(businessId);
-            loadBusiness(businessId);
+            loadDashboard(businessId);
           }}
           className="mt-6 flex gap-2"
         >
@@ -175,6 +203,10 @@ export default function DashboardPage() {
             {loading ? "Loading…" : "Load"}
           </button>
         </form>
+        <p className="mt-2 text-xs text-gray-500 text-center">
+          This is the ID from the link in your confirmation email. Bookmark this page (with
+          the ID filled in) so you can check back anytime.
+        </p>
 
         {businessId && (
           <p className="mt-3 text-center text-sm">
@@ -186,6 +218,9 @@ export default function DashboardPage() {
             >
               Add another customer
             </Link>
+            <span className="block mt-1 text-xs text-gray-500">
+              We&apos;ll email them asking for a Google review after their visit.
+            </span>
           </p>
         )}
 
@@ -193,13 +228,13 @@ export default function DashboardPage() {
           <div className="mt-6 rounded-md border border-gray-200 px-4 py-4 text-center">
             {justSubscribed && (
               <p className="mb-2 text-sm font-medium text-green-700">
-                Thanks for subscribing — your 14-day free trial has started.
+                Thanks for subscribing. Your 14-day free trial has started.
               </p>
             )}
 
             {isSubscribed ? (
               <p className="text-sm text-gray-600">
-                {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} — $29/mo
+                {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} ($29/mo)
               </p>
             ) : (
               <>
@@ -212,7 +247,7 @@ export default function DashboardPage() {
                   disabled={checkoutLoading}
                   className="mt-3 rounded-md bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
                 >
-                  {checkoutLoading ? "Redirecting…" : "Subscribe — $29/mo"}
+                  {checkoutLoading ? "Redirecting…" : "Subscribe for $29/mo"}
                 </button>
               </>
             )}
@@ -225,7 +260,9 @@ export default function DashboardPage() {
 
         {hasLoaded && reviews.length === 0 && !error && (
           <p className="mt-10 text-center text-gray-500">
-            No reviews yet — check back after your next daily review check.
+            {businessName || "This business"} is all set up and we checked Google just now,
+            nothing new has come in yet. We check again once a day, so it&apos;s worth coming
+            back tomorrow, especially once you&apos;ve added customers above.
           </p>
         )}
 
@@ -257,10 +294,14 @@ export default function DashboardPage() {
                     >
                       {copiedId === review.id ? "Copied" : "Copy reply"}
                     </button>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Copy this and paste it into your reply box on Google, we don&apos;t
+                      post it for you.
+                    </p>
                   </>
                 ) : (
                   <p className="mt-1 text-sm text-gray-500">
-                    Draft pending — check back after the next review check.
+                    Draft pending. Check back after the next review check.
                   </p>
                 )}
               </div>
