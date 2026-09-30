@@ -21,6 +21,7 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdBusinessId, setCreatedBusinessId] = useState<string | null>(null);
+  const [confirmationEmailFailed, setConfirmationEmailFailed] = useState(false);
 
   async function handleSearch(event: FormEvent) {
     event.preventDefault();
@@ -85,6 +86,7 @@ export default function OnboardingPage() {
       }
 
       setCreatedBusinessId(data.business.id);
+      setConfirmationEmailFailed(data.emailStatus === "failed");
       setStep("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -221,15 +223,34 @@ export default function OnboardingPage() {
               {selected.displayName} is now registered with BuzraReviews. We&apos;ll start
               polling for new Google reviews and drafting replies for you to approve.
             </p>
+            {confirmationEmailFailed && createdBusinessId && (
+              <p className="mt-4 rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">
+                We couldn&apos;t send your confirmation email, so save this instead: your
+                business ID is <strong>{createdBusinessId}</strong>. Use it to log back into
+                your dashboard anytime.
+              </p>
+            )}
             {createdBusinessId && (
               <Link
-                href={`/customers?businessId=${encodeURIComponent(
+                href={`/dashboard?businessId=${encodeURIComponent(
                   createdBusinessId
                 )}&businessName=${encodeURIComponent(selected.displayName)}`}
                 className="mt-6 inline-block rounded-md bg-gray-900 px-5 py-2.5 text-white"
               >
-                Add your customers
+                Go to your dashboard
               </Link>
+            )}
+            {createdBusinessId && (
+              <p className="mt-3">
+                <Link
+                  href={`/customers?businessId=${encodeURIComponent(
+                    createdBusinessId
+                  )}&businessName=${encodeURIComponent(selected.displayName)}`}
+                  className="text-sm text-gray-600 underline"
+                >
+                  Or add your customers first
+                </Link>
+              </p>
             )}
           </div>
         )}

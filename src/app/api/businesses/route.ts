@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchBusiness, reviewLinkFor } from '@/lib/places';
 import { supabaseAdmin } from '@/lib/supabase';
+import { sendConfirmationEmail } from '@/lib/resend';
 
 // GET /api/businesses?id=<business id>        -> a single business
 // GET /api/businesses?q=<search text>          -> Google Places candidates
@@ -80,7 +81,24 @@ export async function POST(req: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  return NextResponse.json({ business: data }, { status: 201 });
+
+  // Best-effort: the business record is already created either way, so a
+  // failed confirmation email shouldn't fail signup. The caller gets
+  // emailStatus back so the UI can tell the owner if it didn't go out,
+  // instead of promising an email that never arrives.
+  let emailStatus: 'sent' | 'failed' = 'sent';
+  try {
+    await sendConfirmationEmail({
+      to: data.owner_email,
+      businessName: data.name,
+      businessId: data.id,
+    });
+  } catch (err) {
+    emailStatus = 'failed';
+    console.error(`Confirmation email failed for business ${data.id}:`, err);
+  }
+
+  return NextResponse.json({ business: data, emailStatus }, { status: 201 });
 }
 
 // PATCH /api/businesses?id=<business id>
