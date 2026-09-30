@@ -19,12 +19,27 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { data: businesses, error } = await supabaseAdmin
-    .from('businesses')
-    .select('id, name, google_place_id');
+  let businesses: { id: string; name: string; google_place_id: string | null; reply_tone?: string | null }[] | null;
+  {
+    const primary = await supabaseAdmin
+      .from('businesses')
+      .select('id, name, google_place_id, reply_tone');
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // 42703 = undefined column: the reply_tone migration in
+    // supabase/schema.sql (v1.2) hasn't been run yet. Fall back to the
+    // default tone for every business rather than failing the whole cron
+    // run until it is.
+    if (primary.error?.code === '42703') {
+      const fallback = await supabaseAdmin.from('businesses').select('id, name, google_place_id');
+      if (fallback.error) {
+        return NextResponse.json({ error: fallback.error.message }, { status: 500 });
+      }
+      businesses = fallback.data;
+    } else if (primary.error) {
+      return NextResponse.json({ error: primary.error.message }, { status: 500 });
+    } else {
+      businesses = primary.data;
+    }
   }
 
   const results: Record<string, { newReviews: number; error?: string }> = {};
@@ -68,6 +83,7 @@ export async function GET(req: NextRequest) {
             reviewerName: review.authorName,
             rating: review.rating,
             reviewText: review.text,
+            tone: business.reply_tone ?? undefined,
           });
           await supabaseAdmin
             .from('reviews')

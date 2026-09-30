@@ -66,3 +66,9 @@ alter table reviews enable row level security;
 alter table businesses add column if not exists stripe_customer_id text;
 alter table businesses add column if not exists stripe_subscription_id text;
 alter table businesses add column if not exists subscription_status text;
+
+-- v1.2: per-business reply tone. Free text describing how AI-drafted
+-- replies should sound; the dashboard offers a few presets but the owner
+-- can edit it freely. Defaults to the original hardcoded tone so existing
+-- businesses behave exactly as before this column existed.
+alter table businesses add column if not exists reply_tone text not null default 'friendly and warm, like a small business owner writing personally';

@@ -4,17 +4,34 @@ import { supabaseAdmin } from '@/lib/supabase';
 
 // GET /api/businesses?id=<business id>        -> a single business
 // GET /api/businesses?q=<search text>          -> Google Places candidates
-// The id lookup backs the dashboard (subscription status, name); the q
-// lookup backs onboarding, so the owner can pick the right business before
-// a record is created.
+// The id lookup backs the dashboard (subscription status, name, reply
+// tone); the q lookup backs onboarding, so the owner can pick the right
+// business before a record is created.
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   if (id) {
     const { data, error } = await supabaseAdmin
       .from('businesses')
-      .select('id, name, owner_email, subscription_status')
+      .select('id, name, owner_email, subscription_status, reply_tone')
       .eq('id', id)
       .single();
+
+    // 42703 = undefined column: the reply_tone migration in
+    // supabase/schema.sql (v1.2) hasn't been run against this database yet.
+    // Fall back to the pre-migration column set rather than reporting every
+    // business as not found.
+    if (error?.code === '42703') {
+      const fallback = await supabaseAdmin
+        .from('businesses')
+        .select('id, name, owner_email, subscription_status')
+        .eq('id', id)
+        .single();
+
+      if (fallback.error || !fallback.data) {
+        return NextResponse.json({ error: 'Business not found' }, { status: 404 });
+      }
+      return NextResponse.json({ business: { ...fallback.data, reply_tone: null } });
+    }
 
     if (error || !data) {
       return NextResponse.json({ error: 'Business not found' }, { status: 404 });
@@ -64,4 +81,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
   return NextResponse.json({ business: data }, { status: 201 });
+}
+
+// PATCH /api/businesses?id=<business id>
+// body: { replyTone: string }
+// Updates how AI-drafted replies should sound for this business. Empty or
+// whitespace-only tone is rejected rather than silently stored, since an
+// empty reply_tone would fall back to the default without the owner
+// realizing their edit didn't take.
+export async function PATCH(req: NextRequest) {
+  const id = req.nextUrl.searchParams.get('id');
+  if (!id) {
+    return NextResponse.json({ error: 'Missing ?id=' }, { status: 400 });
+  }
+
+  const body = await req.json().catch(() => null);
+  const replyTone = typeof body?.replyTone === 'string' ? body.replyTone.trim() : '';
+  if (!replyTone) {
+    return NextResponse.json({ error: 'replyTone is required' }, { status: 400 });
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('businesses')
+    .update({ reply_tone: replyTone })
+    .eq('id', id)
+    .select('id, name, owner_email, subscription_status, reply_tone')
+    .single();
+
+  if (error?.code === '42703') {
+    return NextResponse.json(
+      { error: "The reply_tone column hasn't been added to the database yet. Run the latest supabase/schema.sql in the Supabase SQL editor, then try again." },
+      { status: 500 }
+    );
+  }
+  if (error || !data) {
+    return NextResponse.json({ error: error?.message ?? 'Business not found' }, { status: 404 });
+  }
+  return NextResponse.json({ business: data });
 }

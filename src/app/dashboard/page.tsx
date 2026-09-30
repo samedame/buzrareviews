@@ -17,7 +17,22 @@ type Business = {
   id: string;
   name: string;
   subscription_status: string | null;
+  reply_tone: string | null;
 };
+
+// Matches anthropic.ts's DEFAULT_REPLY_TONE. Duplicated here (rather than
+// imported) because anthropic.ts pulls in the Anthropic SDK and throws if
+// ANTHROPIC_API_KEY isn't set, neither of which belong in a client bundle.
+const FALLBACK_TONE = "friendly and warm, like a small business owner writing personally";
+
+const TONE_PRESETS: { label: string; value: string }[] = [
+  { label: "Friendly & warm", value: FALLBACK_TONE },
+  { label: "Professional", value: "professional and polished, formal but still personable" },
+  {
+    label: "Casual & upbeat",
+    value: "casual and upbeat, like texting a friend, contractions and casual phrasing are fine",
+  },
+];
 
 function formatDate(value: string | null): string {
   if (!value) return "";
@@ -46,9 +61,21 @@ export default function DashboardPage() {
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [justSubscribed, setJustSubscribed] = useState(false);
 
-  // Looks up the business itself (name + subscription status). Throws with
-  // a clear, user-facing message on a 404 so the caller can distinguish
-  // "this business ID doesn't exist" from "it exists but has no reviews yet".
+  // Reply tone settings.
+  const [replyTone, setReplyTone] = useState("");
+  const [savedReplyTone, setSavedReplyTone] = useState("");
+  const [toneSaving, setToneSaving] = useState(false);
+  const [toneError, setToneError] = useState<string | null>(null);
+  const [toneJustSaved, setToneJustSaved] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState<string | null>(null);
+  const [previewPositive, setPreviewPositive] = useState<string | null>(null);
+  const [previewConstructive, setPreviewConstructive] = useState<string | null>(null);
+
+  // Looks up the business itself (name, subscription status, reply tone).
+  // Throws with a clear, user-facing message on a 404 so the caller can
+  // distinguish "this business ID doesn't exist" from "it exists but has
+  // no reviews yet".
   const loadBusiness = useCallback(async (id: string): Promise<Business> => {
     const response = await fetch(`/api/businesses?id=${encodeURIComponent(id.trim())}`);
     const data = await response.json();
@@ -89,11 +116,19 @@ export default function DashboardPage() {
       setError(null);
       setLoading(true);
       setHasLoaded(false);
+      setToneError(null);
+      setToneJustSaved(false);
+      setPreviewError(null);
+      setPreviewPositive(null);
+      setPreviewConstructive(null);
 
       try {
         const business = await loadBusiness(id);
         setBusinessName(business.name ?? "");
         setSubscriptionStatus(business.subscription_status ?? null);
+        const tone = business.reply_tone?.trim() || FALLBACK_TONE;
+        setReplyTone(tone);
+        setSavedReplyTone(tone);
 
         const reviewList = await loadReviews(id);
         setReviews(reviewList);
@@ -163,6 +198,61 @@ export default function DashboardPage() {
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : "Something went wrong.");
       setCheckoutLoading(false);
+    }
+  }
+
+  async function handleSaveTone() {
+    if (!businessId || !replyTone.trim()) return;
+    setToneError(null);
+    setToneSaving(true);
+
+    try {
+      const response = await fetch(`/api/businesses?id=${encodeURIComponent(businessId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ replyTone }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Couldn't save that tone.");
+      }
+
+      setSavedReplyTone(replyTone);
+      setToneJustSaved(true);
+      setTimeout(() => setToneJustSaved(false), 2500);
+    } catch (err) {
+      setToneError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setToneSaving(false);
+    }
+  }
+
+  async function handlePreviewTone() {
+    if (!replyTone.trim()) return;
+    setPreviewError(null);
+    setPreviewLoading(true);
+    setPreviewPositive(null);
+    setPreviewConstructive(null);
+
+    try {
+      const response = await fetch("/api/preview-reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessName: businessName || "your business", tone: replyTone }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Couldn't generate an example.");
+      }
+
+      setPreviewPositive(data.positive.reply);
+      setPreviewConstructive(data.constructive.reply);
+    } catch (err) {
+      setPreviewError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setPreviewLoading(false);
     }
   }
 
@@ -253,6 +343,88 @@ export default function DashboardPage() {
             )}
 
             {checkoutError && <p className="mt-2 text-sm text-red-600">{checkoutError}</p>}
+          </div>
+        )}
+
+        {businessId && hasLoaded && (
+          <div className="mt-6 rounded-md border border-gray-200 px-4 py-4">
+            <h2 className="text-sm font-semibold text-gray-900">Reply tone</h2>
+            <p className="mt-1 text-xs text-gray-500">
+              This controls how the AI drafts replies to your reviews. Pick a starting point
+              below or write your own, then save. It only affects replies drafted from now
+              on, reviews already drafted won&apos;t change.
+            </p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {TONE_PRESETS.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => setReplyTone(preset.value)}
+                  className="rounded-full border border-gray-300 px-3 py-1 text-xs text-gray-700 hover:border-gray-900"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={replyTone}
+              onChange={(event) => setReplyTone(event.target.value)}
+              rows={2}
+              className="mt-3 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
+              placeholder="e.g. friendly and warm, like a small business owner writing personally"
+            />
+
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSaveTone}
+                disabled={toneSaving || !replyTone.trim() || replyTone === savedReplyTone}
+                className="rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+              >
+                {toneSaving ? "Saving…" : "Save tone"}
+              </button>
+              <button
+                type="button"
+                onClick={handlePreviewTone}
+                disabled={previewLoading || !replyTone.trim()}
+                className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 disabled:opacity-50"
+              >
+                {previewLoading ? "Generating example…" : "Show me an example"}
+              </button>
+              {toneJustSaved && <span className="text-xs font-medium text-green-700">Saved</span>}
+            </div>
+
+            {toneError && <p className="mt-2 text-xs text-red-600">{toneError}</p>}
+            {previewError && <p className="mt-2 text-xs text-red-600">{previewError}</p>}
+
+            {(previewPositive || previewConstructive) && (
+              <div className="mt-4 space-y-3">
+                <p className="text-xs font-medium text-gray-500">
+                  Example only, these aren&apos;t real reviews
+                </p>
+                {previewPositive && (
+                  <div className="rounded-md bg-gray-50 px-3 py-2">
+                    <p className="text-xs text-gray-500">
+                      5-star review from &quot;Jordan&quot;: &quot;Everyone here was so
+                      welcoming and the service was great from start to finish. Highly
+                      recommend.&quot;
+                    </p>
+                    <p className="mt-2 text-sm text-gray-800">{previewPositive}</p>
+                  </div>
+                )}
+                {previewConstructive && (
+                  <div className="rounded-md bg-gray-50 px-3 py-2">
+                    <p className="text-xs text-gray-500">
+                      2-star review from &quot;Morgan&quot;: &quot;Had to wait a lot longer
+                      than expected and no one really explained what was going on...&quot;
+                    </p>
+                    <p className="mt-2 text-sm text-gray-800">{previewConstructive}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
