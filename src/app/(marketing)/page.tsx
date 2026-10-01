@@ -1,5 +1,8 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
+import { pageMetadata } from "@/config/metadata";
+import { DEFAULT_TITLE, DEFAULT_DESCRIPTION } from "@/app/layout";
 import { PlanCard } from "@/components/marketing/PlanCard";
 import { FounderNote } from "@/components/marketing/FounderNote";
 import { Hero } from "@/components/marketing/Hero";
@@ -10,6 +13,13 @@ import { ToneDemo } from "@/components/marketing/ToneDemo";
 import { FinalCta } from "@/components/marketing/FinalCta";
 import { Faq } from "@/components/ui/Faq";
 import { getFaqItems, HOME_FAQ_ORDER } from "@/content/faq";
+
+export const metadata: Metadata = pageMetadata({
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+});
 
 export default function HomePage() {
   return (

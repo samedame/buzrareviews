@@ -5,18 +5,15 @@ import { ContactForm } from "@/components/marketing/ContactForm";
 import { BusinessSearchForm } from "@/components/marketing/BusinessSearchForm";
 import { site } from "@/config/site";
 import { SETUP_VISIT_STEPS } from "@/content/setup";
+import { pageMetadata } from "@/config/metadata";
 
-export const metadata: Metadata = site.inPersonInBozeman
-  ? {
-      title: "Setup help from Sam",
-      description: "Need a hand? Sam will set up BuzraReviews with you on a call, or in person in Bozeman, in about 20 minutes.",
-      alternates: { canonical: "/setup" },
-    }
-  : {
-      title: "Setup help from Sam",
-      description: "Need a hand? Sam will set up BuzraReviews with you on a call, in about 20 minutes.",
-      alternates: { canonical: "/setup" },
-    };
+export const metadata: Metadata = pageMetadata({
+  title: "Setup help from Sam",
+  description: site.inPersonInBozeman
+    ? "Need a hand? Sam will set up BuzraReviews with you on a call, or in person in Bozeman, in about 20 minutes."
+    : "Need a hand? Sam will set up BuzraReviews with you on a call, in about 20 minutes.",
+  path: "/setup",
+});
 
 export default function SetupPage() {
   return (

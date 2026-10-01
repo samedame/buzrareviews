@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 import { SUBSCRIPTION_PRICE_USD_CENTS, TRIAL_PERIOD_DAYS } from "@/lib/pricing";
 import { site } from "@/config/site";
+import { pageMetadata } from "@/config/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
   description: "The terms for using BuzraReviews, including billing and SMS program terms.",
-  alternates: { canonical: "/terms" },
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   const price = Math.round(SUBSCRIPTION_PRICE_USD_CENTS / 100);

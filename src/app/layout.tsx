@@ -17,8 +17,13 @@ const atkinson = Atkinson_Hyperlegible_Next({
   weight: "variable",
 });
 
-const DEFAULT_TITLE = `${site.name}: Google reviews for local businesses`;
-const DEFAULT_DESCRIPTION =
+// Exported so the home page (src/app/(marketing)/page.tsx) can build its own
+// metadata from the exact same strings -- its `metadata` export otherwise
+// shallow-replaces everything below for that route, including the parts
+// (openGraph, twitter) that would silently vanish if it set its own without
+// repeating these.
+export const DEFAULT_TITLE = `${site.name}: Google reviews for local businesses`;
+export const DEFAULT_DESCRIPTION =
   "Ask every customer for a Google review and answer every review in your voice. Review request emails and drafted replies, $29 a month, no contract.";
 
 export const metadata: Metadata = {
