@@ -108,6 +108,6 @@ export const PLAN_NOT_INCLUDED = [
 ];
 
 export const FOUNDER_NOTE = {
-  body: "I'm Sam, and I build BuzraReviews here in Bozeman. If you run a business in town, I'll come by and set it up with you in person. If you're somewhere else, you can set it up yourself in a few minutes, and you'll always be able to reach me if something goes wrong.",
+  body: "I'm Sam, and I build BuzraReviews here in Bozeman. You can set yourself up in a few minutes, and if you run into any trouble, I'll help you get it set up myself.",
   signature: "Sam, founder of BuzraReviews",
 };

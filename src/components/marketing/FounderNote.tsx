@@ -24,7 +24,7 @@ export function FounderNote() {
         <p className="mt-4 text-small font-medium text-ink-2">{FOUNDER_NOTE.signature}</p>
         <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
           <Link href="/bozeman" className="text-small text-meadow underline underline-offset-[3px]">
-            Book an in-person setup
+            Having trouble? Get help from Sam
           </Link>
           {site.contactEmail && (
             <a href={`mailto:${site.contactEmail}`} className="text-small text-meadow underline underline-offset-[3px]">
