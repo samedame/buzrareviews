@@ -130,16 +130,18 @@ export default function OnboardingPage() {
           <form onSubmit={handleSearch} className="mt-6 flex gap-2">
             <input
               type="text"
+              name="business"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="e.g. Bloom Salon, Bozeman MT"
               aria-label="Business name and city"
+              autoComplete="organization"
               className="flex-1 rounded-[var(--radius-control)] border border-line px-3 py-2.5 text-body text-ink outline-none placeholder:text-ink-3 focus-visible:border-ink"
               minLength={3}
               required
             />
             <Button type="submit" disabled={loading}>
-              {loading ? "Searching" : "Search"}
+              {loading ? "Searching…" : "Search"}
             </Button>
           </form>
 
@@ -179,9 +181,11 @@ export default function OnboardingPage() {
           <form onSubmit={handleConfirm} className="mt-6 flex flex-col gap-4">
             <Field
               id="ownerEmail"
+              name="email"
               label="Your email"
               hint="We'll send review activity and drafted replies here for you to approve."
               type="email"
+              autoComplete="email"
               value={ownerEmail}
               onChange={(event) => setOwnerEmail(event.target.value)}
               placeholder="you@yourbusiness.com"
@@ -190,8 +194,11 @@ export default function OnboardingPage() {
 
             <Field
               id="ownerPhone"
+              name="tel"
               label="Phone (optional)"
               type="tel"
+              autoComplete="tel"
+              inputMode="tel"
               value={ownerPhone}
               onChange={(event) => setOwnerPhone(event.target.value)}
               placeholder="(555) 555-5555"
@@ -217,7 +224,7 @@ export default function OnboardingPage() {
                 Back
               </Button>
               <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? "Saving" : "Confirm & create"}
+                {loading ? "Saving…" : "Confirm & create"}
               </Button>
             </div>
           </form>

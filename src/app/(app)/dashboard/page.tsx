@@ -280,6 +280,7 @@ export default function DashboardPage() {
           <input
             id="dashboardBusinessId"
             type="text"
+            autoComplete="off"
             value={businessId}
             onChange={(event) => setBusinessId(event.target.value)}
             placeholder="Business ID"
@@ -287,7 +288,7 @@ export default function DashboardPage() {
             required
           />
           <Button type="submit" disabled={loading}>
-            {loading ? "Loading" : "Load"}
+            {loading ? "Loading…" : "Load"}
           </Button>
         </div>
       </form>
@@ -330,7 +331,7 @@ export default function DashboardPage() {
               </p>
               <div className="mt-3 flex justify-center">
                 <Button onClick={handleSubscribe} disabled={checkoutLoading}>
-                  {checkoutLoading ? "Redirecting" : "Subscribe for $29/mo"}
+                  {checkoutLoading ? "Redirecting…" : "Subscribe for $29/mo"}
                 </Button>
               </div>
             </>
@@ -383,17 +384,17 @@ export default function DashboardPage() {
               type="button"
               onClick={handleSaveTone}
               disabled={toneSaving || !replyTone.trim() || replyTone === savedReplyTone}
-              className="rounded-[var(--radius-control)] bg-ink px-3 py-1.5 text-small font-medium text-paper disabled:opacity-50"
+              className="rounded-[var(--radius-control)] bg-ink px-3 py-1.5 text-small font-medium text-paper disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             >
-              {toneSaving ? "Saving" : "Save tone"}
+              {toneSaving ? "Saving…" : "Save tone"}
             </button>
             <button
               type="button"
               onClick={handlePreviewTone}
               disabled={previewLoading || !replyTone.trim()}
-              className="rounded-[var(--radius-control)] border border-line px-3 py-1.5 text-small font-medium text-ink-2 disabled:opacity-50"
+              className="rounded-[var(--radius-control)] border border-line px-3 py-1.5 text-small font-medium text-ink-2 disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
             >
-              {previewLoading ? "Generating example" : "Show me an example"}
+              {previewLoading ? "Generating…" : "Show me an example"}
             </button>
             {toneJustSaved && <span className="text-small font-medium text-meadow">Saved</span>}
           </div>
@@ -467,7 +468,7 @@ export default function DashboardPage() {
                   <p className="text-small text-ink mt-1">{review.ai_draft_reply}</p>
                   <button
                     onClick={() => handleCopy(review)}
-                    className="mt-2 inline-flex items-center gap-1.5 text-small font-medium text-ink underline underline-offset-[3px]"
+                    className="mt-2 inline-flex items-center gap-1.5 text-small font-medium text-ink underline underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
                   >
                     <Icon name={copiedId === review.id ? "check" : "copy"} size={14} />
                     {copiedId === review.id ? "Copied" : "Copy reply"}

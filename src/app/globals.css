@@ -57,6 +57,26 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Mobile platform layer (mobile-native skill): remove the tap-highlight
+   flash and font-inflation-in-landscape tells, and make every tappable
+   element respond without the double-tap-zoom delay or a long-press text
+   selection/callout. Form inputs already render at 18px (text-body), well
+   above the 16px floor that causes iOS Safari to zoom on focus, so no
+   input font-size override is needed here. */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 /* Fluid type scale -- see DESIGN.md S3 for the full role table. */
 .text-hero {
   font-family: var(--font-display);

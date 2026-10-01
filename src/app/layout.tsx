@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Libre_Franklin, Atkinson_Hyperlegible_Next } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -41,6 +41,16 @@ export const metadata: Metadata = {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
   },
+};
+
+// Light theme only (DESIGN.md: no prefers-color-scheme: dark block), so a
+// single theme-color is correct here -- it matches the paper background
+// at the very top of the page (the sticky header), the same value the
+// browser chrome / status bar should take on mobile.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

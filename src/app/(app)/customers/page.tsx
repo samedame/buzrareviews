@@ -103,6 +103,7 @@ export default function CustomersPage() {
         <Field
           id="businessId"
           label="Business ID"
+          autoComplete="off"
           value={businessId}
           onChange={(event) => setBusinessId(event.target.value)}
           placeholder="Paste the business's ID"
@@ -111,7 +112,9 @@ export default function CustomersPage() {
 
         <Field
           id="customerName"
+          name="name"
           label="Customer name (optional)"
+          autoComplete="name"
           value={name}
           onChange={(event) => setName(event.target.value)}
           placeholder="Jamie Rivera"
@@ -119,8 +122,10 @@ export default function CustomersPage() {
 
         <Field
           id="customerEmail"
+          name="email"
           label="Customer email"
           type="email"
+          autoComplete="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="jamie@example.com"
@@ -129,8 +134,11 @@ export default function CustomersPage() {
 
         <Field
           id="customerPhone"
+          name="tel"
           label="Phone (optional)"
           type="tel"
+          autoComplete="tel"
+          inputMode="tel"
           value={phone}
           onChange={(event) => setPhone(event.target.value)}
           placeholder="(555) 555-5555"
@@ -143,7 +151,7 @@ export default function CustomersPage() {
         )}
 
         <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "Adding" : "Add & send review request"}
+          {loading ? "Adding…" : "Add & send review request"}
         </Button>
       </form>
 

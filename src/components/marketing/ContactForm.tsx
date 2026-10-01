@@ -104,7 +104,7 @@ export function ContactForm() {
       )}
 
       <Button type="submit" size="large" disabled={status === "submitting"}>
-        {status === "submitting" ? "Sending" : "Ask Sam for a visit"}
+        {status === "submitting" ? "Sending…" : "Ask Sam for a visit"}
       </Button>
     </form>
   );

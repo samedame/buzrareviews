@@ -55,7 +55,7 @@ export function MobileMenu() {
       <dialog
         ref={dialogRef}
         aria-label="Site menu"
-        className="m-0 h-full max-h-none w-full max-w-none bg-paper p-0 backdrop:bg-ink/40"
+        className="m-0 h-dvh max-h-none w-full max-w-none bg-paper p-0 backdrop:bg-ink/40"
         onClick={(e) => {
           if (e.target === dialogRef.current) closeMenu();
         }}
