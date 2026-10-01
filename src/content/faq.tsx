@@ -88,8 +88,9 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "good-fit",
     question: "Is my kind of business a good fit?",
-    answer:
-      "If you have one location, customers who can leave you a Google review, and their email addresses, yes. Salons, barbershops, dental offices, restaurants, cafes, auto shops, and chiropractors all fit. BuzraReviews isn't built for businesses with many locations.",
+    answer: site.showHealthcare
+      ? "If you have one location, customers who can leave you a Google review, and their email addresses, yes. Salons, barbershops, dental offices, restaurants, cafes, auto shops, and chiropractors all fit. BuzraReviews isn't built for businesses with many locations."
+      : "If you have one location, customers who can leave you a Google review, and their email addresses, yes. Salons, barbershops, restaurants, cafes, auto shops, and similar local businesses all fit. BuzraReviews isn't built for businesses with many locations.",
   },
   {
     id: "how-many",

@@ -12,7 +12,7 @@ export async function sendReviewRequestEmail(opts: {
   reviewLink: string;
 }) {
   const { to, customerName, businessName, reviewLink } = opts;
-  const greeting = customerName ? `Hi ${customerName},` : 'Hi,';
+  const greeting = customerName ? `Hi ${customerName},` : 'Hi there,';
 
   return resend.emails.send({
     from: `${businessName} <reviews@${process.env.SENDING_DOMAIN}>`,

@@ -51,7 +51,7 @@ export function SiteFooter() {
 
           <FooterColumn title="Who it's for">
             <FooterLink href="/for/salons">Salons and barbershops</FooterLink>
-            <FooterLink href="/for/dental">Dental offices</FooterLink>
+            {site.showHealthcare && <FooterLink href="/for/dental">Dental offices</FooterLink>}
             <FooterLink href="/for/restaurants">Restaurants and cafes</FooterLink>
           </FooterColumn>
 

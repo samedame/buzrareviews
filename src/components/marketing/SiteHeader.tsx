@@ -12,7 +12,7 @@ import { site } from "@/config/site";
 
 const WHO_ITS_FOR = [
   { label: "Salons and barbershops", href: "/for/salons" },
-  { label: "Dental offices", href: "/for/dental" },
+  ...(site.showHealthcare ? [{ label: "Dental offices", href: "/for/dental" }] : []),
   { label: "Restaurants and cafes", href: "/for/restaurants" },
 ];
 
