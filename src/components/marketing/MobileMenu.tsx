@@ -46,7 +46,7 @@ export function MobileMenu() {
         onClick={openMenu}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="inline-flex items-center justify-center rounded-[var(--radius-control)] p-2 text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:hidden"
+        className="inline-flex items-center justify-center rounded-[var(--radius-control)] p-2 text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink lg:hidden"
       >
         <Icon name="menu" />
         <VisuallyHidden>Open menu</VisuallyHidden>

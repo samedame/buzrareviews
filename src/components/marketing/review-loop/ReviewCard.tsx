@@ -21,7 +21,11 @@ export function ReviewCard({
     <m.div
       className="paper-card w-full p-5"
       initial={false}
-      animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+      animate={
+        visible
+          ? { opacity: 1, y: 0, visibility: "visible" }
+          : { opacity: 0, y: 8, visibility: "hidden" }
+      }
       transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
     >
       <p className="text-card-micro text-ink-3">New review</p>

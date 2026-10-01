@@ -108,6 +108,34 @@ Next step: commit Phase 5, then start Phase 6 (move onboarding/customers/dashboa
 
 Next step: commit Phase 6, then start Phase 7 (build the full QA harness: Playwright page/funnel/motion specs, Lighthouse, Impeccable detect, copy lint; two critique passes).
 
-## Phase 7: QA and polish — not started
+## Phase 7: QA and polish — in progress
+
+**QA harness built** (H1): `qa/playwright.config.ts` (3 projects: mobile/tablet/desktop), `qa/routes.ts`, `qa/copy-lint.ts` (the full G3 banned-phrase list + em/en dash check), `qa/tests/pages.spec.ts` (console/page errors, exactly one h1, no horizontal scroll, axe 0 violations, copy lint, internal link resolution -- all routes x all projects), `qa/tests/funnel.spec.ts` (hero personalization, onboarding `?q=` auto-run, empty-submit validation, tone switch, vertical switch, real clipboard copy, mobile menu focus trap, contact form success/503), `qa/tests/motion.spec.ts` (reduced-motion final-state, full-sequence timing incl. the real 3600-4400ms "Copied" window, 12 choreography frames, LCP-element check, JS-transfer-weight check), `qa/lighthouse.mjs`. `package.json` scripts added (`qa:types`, `qa:e2e`, `qa:lh`, `qa`).
+
+**Real bugs found and fixed while building/running the harness** (full reasoning in DECISIONS.md #17-24):
+- Horizontal scroll at the 768px tablet breakpoint on every marketing page -- the header's desktop nav/CTA switched on at `sm:` (640px) but didn't actually fit until much wider. Changed to `lg:` (1024px) across `SiteHeader`/`MobileMenu`.
+- `ReviewCard`/`ReplyCard` animating `opacity: 0→1` for their pending state meant Lighthouse's accessibility scan, if it snapshot mid-transition, measured near-zero effective contrast on real, compliant text -- added `visibility: hidden/visible` alongside the opacity animation (axe correctly excludes `visibility: hidden` from contrast checks). Fixed: home desktop accessibility 96 -> 100.
+- `EmailCard`, `ReplyCard`, and `ToneDemo` all had an unconditional entrance animation (blur/opacity fade) that incorrectly played on the component's very *first* render too, not just on real later updates (tone switches, personalization, the real choreographed reveal) -- a genuine motion-spec violation (G2/E7: only the hero choreography and direct user-action responses may animate) caught by Impeccable's low-contrast scanner hitting the bug's brief mid-flash window. Fixed with a `hasMounted` ref guard in all three.
+- Playwright's `webServer.command` and in-test relative paths (`page.screenshot()`, `mkdir()`) resolve against two *different* working directories (the config file's own dir vs. the invoking shell's cwd respectively) -- fixed both.
+- The FAQ answers and footer's bottom legal line had no `max-width`, letting them stretch to the full container width; fixed (footer measured 1120px -> 729px after).
+
+**Gates status** (H2), evidence from this session:
+- Build: `next build` exits 0, every marketing route `○`/`●`. PASS.
+- Types: `npm run qa:types` clean. PASS.
+- Lint: scoped command 0 problems; `npm run lint` shows exactly the 5 known baseline errors. PASS.
+- E2E: 146/147 Playwright tests pass across all 3 projects (the 1 failure is the JS-weight gate below; 6 skips are intentional desktop-only checks). PASS (funnel/motion/pages behavior).
+- Accessibility: axe 0 violations on every route (confirmed via the E2E suite); Lighthouse accessibility 100 on every route/form-factor. PASS.
+- Performance (mobile): Lighthouse 96-98 across `/`, `/pricing`, `/for/salons` (>=90 target). LCP is the one flaky sub-metric: `/` and `/pricing` pass comfortably (2.3-2.5s observed), `/for/salons` straddles the 2.5s line across repeated runs (2.00-2.62s observed, 5 runs, zero code changes between them) -- root-caused to Lighthouse's simulated-throttling variance on a local, non-CDN `next start` server, not a deterministic defect (DESIGN.md/DECISIONS.md #23c). CLS 0.000 and TBT <=11ms everywhere, both comfortably inside budget.
+- Performance (desktop): Lighthouse 100 on every route. PASS.
+- Best practices / SEO: 100 on every route, every form factor. PASS.
+- JavaScript weight: measures ~213KB vs the 200KB target, a real ~13KB shortfall. Investigated the actual chunk contents (not just sizes): ~113KB is React 19 + Next's own client runtime (present on any page, not our code), ~39KB is Motion combined with the interactive components (confirmed no duplication), ~60KB is the rest of our app code. Did not drop Motion (DESIGN.md's explicit locked requirement) or eject from Next.js to force a pass. FAIL, honestly reported (DECISIONS.md #22-23).
+- Anti-slop detector: `impeccable detect` exits 0 with zero findings on all 8 marketing routes and the codebase scan, after 3 justified waiver categories recorded in `.impeccable/config.json` (full reasoning DECISIONS.md #24) and 2 real fixes (FAQ/footer max-width). PASS.
+- Copy: copy lint 0 hits on every route (confirmed by the E2E suite's own copy-lint test, independent of Impeccable). PASS.
+- Contrast: DESIGN.md's ledger (S9) has all 10 pairs independently computed and passing; the one contrast *bug* found (opacity-animation false reading) is fixed, not waived.
+- Motion: STANDARDS.md review against `review-animations` skill and the critique passes are still pending (see below).
+
+**Still remaining in Phase 7**: the design-skill review passes (`web-design-guidelines` on changed UI files, `vercel-react-best-practices` on client components, `review-animations/STANDARDS.md` against all motion code, `mobile-native` checklist at 390px) and the two full critique passes with screenshots logged to `docs/website/CRITIQUE_LOG.md` (G5 self-checks per page). Delegating this next to a fork to keep the large volume of skill/screenshot output out of the main thread, per the same reasoning as Phase 1's reference-screenshot review.
+
+Next step: commit this checkpoint, then run the design-skill reviews + critique passes, then re-verify every gate one final time before Phase 8-9.
 
 ## Phase 8-9: Ship and report — not started

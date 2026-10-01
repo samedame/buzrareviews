@@ -63,7 +63,7 @@ export function SiteFooter() {
           </FooterColumn>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-small text-ink-3">
+        <div className="mt-12 flex flex-col gap-2 border-t border-line pt-6 text-small text-ink-3 max-w-[75ch]">
           <p>
             © {year} {site.name}. Made in {site.city}.
           </p>

@@ -94,7 +94,7 @@ export function SiteHeader() {
           <span className="text-nav text-ink text-lg">{site.name}</span>
         </Link>
 
-        <nav className="hidden sm:flex items-center gap-7">
+        <nav className="hidden lg:flex items-center gap-7">
           <Link href="/#how-it-works" className="text-nav text-ink">
             How it works
           </Link>
@@ -108,10 +108,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-5">
-          <Link href="/dashboard" className="hidden sm:inline text-nav text-meadow underline underline-offset-[3px]">
+          <Link href="/dashboard" className="hidden lg:inline text-nav text-meadow underline underline-offset-[3px]">
             Your dashboard
           </Link>
-          <div className="hidden sm:block">
+          <div className="hidden lg:block">
             <Button href="/onboarding" onClick={() => track("start_trial_click", { location: "header" })}>
               Start free trial
             </Button>

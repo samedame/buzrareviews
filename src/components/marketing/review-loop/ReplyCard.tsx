@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { m } from "motion/react";
 import { Icon } from "@/components/ui/Icon";
 
@@ -18,6 +18,16 @@ export function ReplyCard({
   const [realCopied, setRealCopied] = useState(false);
   const copied = demoCopied || realCopied;
 
+  // If `resolved` is already true on the very first render (the SSR-safe
+  // default, before the client-only pending-state effect in
+  // useReviewLoopSequence has run), this text must not blur in -- that
+  // effect fires moments later and would cut the entrance transition off
+  // mid-flight anyway, which is exactly the "flicker" E7 bans.
+  const hasMounted = useRef(false);
+  useEffect(() => {
+    hasMounted.current = true;
+  }, []);
+
   async function handleCopy() {
     try {
       await navigator.clipboard.writeText(replyText);
@@ -34,7 +44,7 @@ export function ReplyCard({
     <m.div
       className="paper-card w-full p-5"
       initial={false}
-      animate={visible ? { opacity: 1 } : { opacity: 0 }}
+      animate={visible ? { opacity: 1, visibility: "visible" } : { opacity: 0, visibility: "hidden" }}
       transition={{ duration: 0.26, ease: [0.23, 1, 0.32, 1] }}
     >
       <p className="text-card-micro text-ink-3">Reply drafted</p>
@@ -42,7 +52,8 @@ export function ReplyCard({
       {resolved ? (
         <m.p
           key="reply-text"
-          initial={{ opacity: 0, filter: "blur(4px)" }}
+          /* eslint-disable-next-line react-hooks/refs -- intentional read of the mount flag; see comment above */
+          initial={hasMounted.current ? { opacity: 0, filter: "blur(4px)" } : false}
           animate={{ opacity: 1, filter: "blur(0px)" }}
           transition={{ duration: 0.24 }}
           className="text-small text-ink mt-2"

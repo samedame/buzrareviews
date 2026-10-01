@@ -13,7 +13,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
               <Icon name="plus" className="shrink-0 text-ink-3 transition-transform duration-200 group-open:rotate-45" />
             </summary>
             <div className="pt-3">
-              <p className="text-body text-ink-2">{item.answer}</p>
+              <p className="text-body text-ink-2 max-w-[68ch]">{item.answer}</p>
               {item.link && (
                 <a
                   href={item.link.href}

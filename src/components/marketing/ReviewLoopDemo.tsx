@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LazyMotion, domAnimation, MotionConfig, m, AnimatePresence } from "motion/react";
+import { LazyMotion, domAnimation, MotionConfig, m } from "motion/react";
 import { track } from "@vercel/analytics";
 import { ExampleTag } from "@/components/ui/ExampleTag";
 import { EmailCard } from "@/components/marketing/review-loop/EmailCard";
@@ -52,7 +52,7 @@ export function ReviewLoopDemo({
   return (
     <LazyMotion features={domAnimation}>
       <MotionConfig reducedMotion="user">
-        <div>
+        <div data-testid="review-loop-demo">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <ExampleTag />
             {showVerticalSwitch && <VerticalSwitch value={vertical} onChange={handleVerticalChange} />}
@@ -82,21 +82,18 @@ export function ReviewLoopDemo({
           </div>
 
           <div className="mt-4 h-9">
-            <AnimatePresence>
-              {seq.replayVisible && (
-                <m.button
-                  type="button"
-                  onClick={handleReplay}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="text-small font-medium text-meadow underline underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-                >
-                  Replay
-                </m.button>
-              )}
-            </AnimatePresence>
+            {seq.replayVisible && (
+              <m.button
+                type="button"
+                onClick={handleReplay}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className="text-small font-medium text-meadow underline underline-offset-[3px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              >
+                Replay
+              </m.button>
+            )}
           </div>
         </div>
       </MotionConfig>
