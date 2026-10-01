@@ -1,9 +1,26 @@
+import type { ReactNode } from "react";
+import { site } from "@/config/site";
+
 export type FaqItem = {
   id: string;
   question: string;
-  answer: string;
+  answer: ReactNode;
   link?: { label: string; href: string };
 };
+
+// A handful of answers need a real mailto link mid-sentence (issue 1: "email
+// Sam" must be a visible, clickable address, not plain text). `answer` is a
+// ReactNode specifically so these can stay inline instead of forcing every
+// answer through a link-per-item structure Faq.tsx doesn't otherwise have.
+function emailSamLink() {
+  return site.contactEmail ? (
+    <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+      {site.contactEmail}
+    </a>
+  ) : (
+    "Sam"
+  );
+}
 
 // Appendix X3. Home uses all of these in this order except "how-many".
 // /pricing uses: trial, contract, how-many, what-customers-get.
@@ -54,12 +71,14 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "free-trial",
     question: "How does the free trial work?",
     answer:
-      "Start your trial from your dashboard. You'll enter a card through Stripe and get 14 days free. You won't be charged until the trial ends, and if you cancel before then, you pay nothing.",
+      "Find your business and add your email. We'll email you a link to your dashboard, and you start your 14-day trial from there by entering a card through Stripe. You won't be charged until the trial ends, and if you cancel before then, you pay nothing.",
   },
   {
     id: "contract-cancel",
     question: "Is there a contract? How do I cancel?",
-    answer: "No contract. It's month to month, and you can cancel anytime. Just email Sam and it's done.",
+    answer: (
+      <>No contract. It&apos;s month to month. To cancel, email Sam at {emailSamLink()} and he&apos;ll take care of it.</>
+    ),
   },
   {
     id: "text-messages",

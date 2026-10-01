@@ -59,7 +59,17 @@ Bare domain is primary and returns 200; www redirects to it. Note: the redirect 
 - Privacy/Terms already have the `{site.contactEmail && <a href="mailto:...">}` conditional pattern built in (currently inert since `contactEmail` was `null`) — setting `contactEmail` activates them immediately. Still need Phase 5's wording rewrite (entity name, mailing address, unsubscribe mention, Manage billing mention) and the `/bozeman` → `/setup` link update.
 - `qa/playwright.config.ts` projects: mobile (390x844), tablet (768x1024), desktop (1440x900), `webServer` on `:3100`, outputs to `qa-artifacts/`.
 
-## Phase 1: Contact email + trial wording — not started
+## Phase 1: Contact email + trial wording — done
+
+- Widened `FaqItem.answer` from `string` to `ReactNode` and renamed `content/faq.ts` to `.tsx` (decision #29) so the "contract-cancel" answer could carry a real, visible, mid-sentence `mailto:` link instead of plain "Just email Sam" text (issue 1's literal example phrase). New answer: "No contract. It's month to month. To cancel, email Sam at {link to support@buzrareviews.com} and he'll take care of it." A small `emailSamLink()` helper handles the `site.contactEmail` null-fallback (renders plain "Sam" if ever unset).
+- "How does the free trial work?" FAQ answer replaced with the exact wording from the spec, resolving issue 10 (it now correctly describes the real flow: find your business, add your email, get the dashboard link by email, start the trial from the dashboard through Stripe) -- no button hrefs changed, since "Start free trial" buttons correctly go to `/onboarding` as step one of that real flow.
+- Repo-wide grep for "email sam" / "contact form" / "reach us" / "reach me" / "contact us" (case-insensitive): every other hit was already a real `mailto:`/`tel:` link (`FounderNote.tsx`, `ContactForm.tsx`'s not-connected fallback), inside a fictional demo reply (`demo.ts`, unrelated to the real contact mechanism), the `/api/contact` route's own internal naming (unrelated), or inside Privacy/Terms/`PLAN_INCLUDED_DETAILED`/`/bozeman`, each of which gets its final flag-aware wording from Phase 2 or Phase 5 rather than a redundant interim edit here (logged below).
+- **Deferred to Phase 2** (same exact strings get fully rewritten there anyway, so editing them twice would be pure churn): `/bozeman`'s "Prefer email?" line, `PLAN_INCLUDED`/`PLAN_INCLUDED_DETAILED` item 5's "Email Sam anytime..." body, `FounderNote`'s links.
+- **Deferred to Phase 5**: Privacy's and Terms' "contact form on our Bozeman/setup page" phrasing, which Phase 5 replaces with "You can reach us at {contactEmail}" directly.
+- Verified end to end: built the site with `contactEmail` set and confirmed three real `<a href="mailto:support@buzrareviews.com">` anchors render in the home page's actual HTML (FounderNote's "Email Sam", the new FAQ inline link, and the footer's "Contact") -- all three were already-conditional `{site.contactEmail && ...}` blocks from the original build that simply activated once the value was set.
+- Full gate re-run: `tsc --noEmit` clean, scoped lint clean on the changed file, `next build` exits 0 (all routes still ○/●), full Playwright suite 146 passed / 1 pre-existing failure / 6 skipped (identical to the Phase 0 baseline, no regressions).
+
+## Phase 2: Setup page — not started
 ## Phase 2: Setup page — not started
 ## Phase 3: Metadata — not started
 ## Phase 4: Demo greeting + healthcare flag — not started
