@@ -20,6 +20,10 @@ Every factual claim on the site, with the file and line that proves it. Built in
 | Review monitoring is Google only, not Yelp/Facebook/TripAdvisor; cannot guarantee every single review is caught | FAQ "How often do you check for new reviews?" (implicit in "new reviews show up," never phrased as a guarantee) | `src/lib/places.ts` -- the file's own comment documents that Place Details returns at most 5 reviews and isn't guaranteed to be the most recent, which is exactly why the site never promises 100% detection |
 | Dental-specific: careful, professional tone recommended, no names, no treatment mentions, never confirms patient status; owner approves every draft | /for/dental page, dental demo reply | B3.4 (healthcare reply risk) and the dental tone note is advisory copy, not a code-enforced claim |
 
+## BrightLocal re-verification (Phase 9)
+
+Re-fetched https://www.brightlocal.com/research/local-consumer-review-survey/ before shipping. All three cited figures confirmed exact matches against the live 2026 Local Consumer Review Survey page: "47% of consumers won't use a business with fewer than 20 reviews," "74% seek reviews written in the last three months," and "Generic or templated replies put off 50% of consumers." No copy changes needed.
+
 ## Not claimed (deliberately cut)
 
 Every item in MASTER_PROMPT.md B2's "Not allowed" column was checked against all copy written in Phases 4-5: no claims about text/SMS being live, no bulk upload, no Yelp/Facebook monitoring, no "real-time" or "instant" language, no auto-posting, no login/password/team seats, no "no credit card required," no discounts/annual plans/free tiers, no specific minute counts beyond "a few minutes," no multi-location features, no invented outcome numbers or customer counts, no "bank-level security"/SOC 2/HIPAA/GDPR claims, no team size or funding claims. No em dashes or en dashes were used to work around any of this (the copy lint in Phase 7 checks this mechanically).
