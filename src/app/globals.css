@@ -84,9 +84,13 @@ body {
   letter-spacing: -0.015em;
 }
 
+/* Color is deliberately not set here -- bake a color into this class and a
+   Tailwind color utility applied alongside it (e.g. text-ink-on-dark on a
+   dark band) can lose the cascade, since generation order decides which
+   same-specificity rule wins, not class-attribute order. Always pair
+   .text-lead with an explicit text-* color utility at the call site. */
 .text-lead {
   font-weight: 400;
-  color: var(--color-ink-2);
   font-size: 1.25rem;
   line-height: 1.55;
   max-width: 58ch;
@@ -134,6 +138,35 @@ body {
   line-height: 1;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* FAQ disclosure: animate open/close height where the browser supports
+   interpolate-size and ::details-content (modern-web-guidance); every other
+   browser just snaps open/closed instantly, which DESIGN.md explicitly
+   allows ("instant elsewhere"). */
+.faq-item {
+  interpolate-size: allow-keywords;
+}
+
+.faq-item::details-content {
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  transition:
+    height var(--dur-reveal) var(--ease-out),
+    opacity var(--dur-reveal) var(--ease-out),
+    content-visibility var(--dur-reveal) allow-discrete;
+}
+
+.faq-item[open]::details-content {
+  height: auto;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item::details-content {
+    transition: none;
+  }
 }
 
 /* Product-mock "paper card" depth -- a defined edge, never a soft glow.

@@ -1,0 +1,90 @@
+export const FACTS_ROW = [
+  "14-day free trial",
+  "Set up in a few minutes",
+  "Cancel anytime",
+] as const;
+
+export const FACTS_BAND = [
+  { bold: "$29 a month, flat.", rest: "One plan with everything in it." },
+  { bold: "No contract.", rest: "Cancel anytime." },
+  { bold: "No sales call.", rest: "Start on your own, right now." },
+  {
+    bold: "Made in Bozeman, Montana.",
+    rest: "Local? Sam will set it up with you in person.",
+    href: "/bozeman",
+  },
+] as const;
+
+export type HowItWorksStep = {
+  number: number;
+  title: string;
+  body: string;
+};
+
+export const HOW_IT_WORKS_STEPS: HowItWorksStep[] = [
+  {
+    number: 1,
+    title: "Find your business.",
+    body: "Search for your business on Google, confirm it's yours, and add your email. We email you a link to your dashboard.",
+  },
+  {
+    number: 2,
+    title: "Add a customer after their visit.",
+    body: "Type their name and email. We send a short, friendly review request from your business name, with a button that opens your Google review form.",
+  },
+  {
+    number: 3,
+    title: "We check Google every day.",
+    body: "New reviews show up in your dashboard with a reply already drafted in the tone you picked.",
+  },
+  {
+    number: 4,
+    title: "Copy, paste, done.",
+    body: "Read the draft, change anything you like, and paste it into Google. We never post for you, so you always have the final word.",
+  },
+];
+
+export type StatLine = {
+  stat: string;
+  answer: string;
+};
+
+export const WHY_IT_MATTERS_STATS: StatLine[] = [
+  {
+    stat: "47% of people won't use a business with fewer than 20 reviews.",
+    answer: "So ask every customer, not just the ones you remember to ask.",
+  },
+  {
+    stat: "74% only care about reviews from the last three months.",
+    answer: "A request after every visit keeps new reviews coming in.",
+  },
+  {
+    stat: "Generic, templated replies make 50% of people unlikely to choose a business.",
+    answer: "Every draft is written for that review, in your tone.",
+  },
+];
+
+export const BRIGHTLOCAL_SOURCE = {
+  label: "Source: BrightLocal, Local Consumer Review Survey 2026",
+  href: "https://www.brightlocal.com/research/local-consumer-review-survey/",
+};
+
+export const PLAN_INCLUDED = [
+  "Review request emails, sent from your business name",
+  "A daily check for new Google reviews",
+  "A drafted reply for each new review, in the tone you choose",
+  "Your dashboard, with every review and draft in one place",
+  "Help from a real person, in person if you're in Bozeman",
+];
+
+export const PLAN_NOT_INCLUDED = [
+  "Setup fees.",
+  "An annual contract.",
+  "Extra charges per employee.",
+  "A sales call just to learn the price.",
+];
+
+export const FOUNDER_NOTE = {
+  body: "I'm Sam, and I build BuzraReviews here in Bozeman. If you run a business in town, I'll come by and set it up with you in person. If you're somewhere else, you can set it up yourself in a few minutes, and you'll always be able to reach me if something goes wrong.",
+  signature: "Sam, founder of BuzraReviews",
+};

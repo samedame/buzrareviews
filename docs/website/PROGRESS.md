@@ -64,7 +64,22 @@ Next step: commit Phase 2, then start Phase 3 (foundation: fonts, tokens, route 
 
 Next step: commit Phase 3, then start Phase 4 (home page sections + the Review Loop demo).
 
-## Phase 4: Home page — not started
+## Phase 4: Home page — done
+
+- `src/content/demo.ts`: typed demo data for all three verticals (salon/dental/restaurant, each with a primary 5-star + secondary low-star review and reply) and the salon-only tone-demo data (3 tones x 2 reviews), plus the email template helpers -- all verified word-for-word against `src/lib/resend.ts` and the reply rules in `src/lib/anthropic.ts` before writing (not just copied from the brief's Appendix X1).
+- `src/content/home.ts`, `src/content/faq.ts`: remaining home-page copy as typed data (facts band, how-it-works steps, why-it-matters stats + BrightLocal source, plan included/excluded lists, founder note, full FAQ bank with home/pricing orderings).
+- The signature **Review Loop demo** (`src/components/marketing/ReviewLoopDemo.tsx` + `review-loop/` subcomponents: `EmailCard`, `ReviewCard`, `ReplyCard`, `GoldThreadSegment`, `VerticalSwitch`, `useReviewLoopSequence`): full choreography timetable from DESIGN.md S6 (thread draws, star stagger, skeleton-to-text resolve, scripted copy/replay), SSR-safe (initial state is always the *final* state, so there's no flash of missing content and no-JS/reduced-motion users get the resolved demo immediately), vertical switching replays from the review-card step per spec, hero search typing personalizes the business name and reply sign-off via a 120ms crossfade without replaying the sequence, and the real "Copy reply" button does a genuine `navigator.clipboard.writeText`.
+- `BusinessSearchForm` (debounced 150ms/40-char emit, empty-submit inline error, dark variant for the final CTA, unique `id` per instance), `ToneDemo` (3-tone radiogroup, 2px-blur crossfade), `HowItWorks` (4 alternating steps, each with a small scripted vignette that plays once on `onViewportEnter`), `WhyItMatters` (stat sentences with the percentage highlighted inline, not in a tile), `PlanCard`, `FounderNote`, `FinalCta`, and `Faq` (native `<details>`, CSS-only height/opacity animation via `interpolate-size`/`::details-content`, instant fallback elsewhere) all built and assembled into `(marketing)/page.tsx` in the F2 section order.
+- Installed `motion` (v13.4.6); used via `LazyMotion`/`domAnimation`/`MotionConfig reducedMotion="user"` in every animated island, matching DESIGN.md S6.
+- Added a `plus` icon (rotates 45° on open, the spec'd FAQ disclosure treatment) to the shared `Icon` set -- 9 of the ≤10 icon budget now used.
+- Manual QA via Playwright screenshots at 390 and 1440 (see G5 self-checks, logged informally here and formally repeated in CRITIQUE_LOG.md during Phase 7): caught and fixed two real bugs before commit --
+  1. The header's desktop-only "Start free trial" button was visible on mobile. Root cause: `Button`'s own base classes always include `inline-flex`, which fought with a `hidden sm:inline-flex` className passed in for responsive visibility (Tailwind doesn't guarantee className-prop utilities win over a component's baked-in classes). Fixed by wrapping the button in a `<div className="hidden sm:block">` instead, and documented the pattern so it doesn't recur (`.text-lead`'s color was fixed the same way pre-emptively). See DECISIONS.md #9-10.
+  2. The vertical switch labels ("Salon / Dental office / Restaurant") plus the Example tag wrapped awkwardly at 390px. Added `switchLabelShort` per DESIGN.md's own "short labels on mobile" spec. See DECISIONS.md #11.
+- Confirmed via scripted interaction (Playwright): vertical switch updates the business name, hero search typing personalizes the email subject live, tone switch changes the drafted reply text, and empty-submit validation keeps the visitor on the page with the inline error -- all working.
+- Two console 404s observed on `/` are expected, not bugs: Next.js prefetches linked routes (`/pricing`, `/bozeman`) that don't exist until Phase 5.
+- Fixed one real lint error introduced by this phase's code (`react-hooks/set-state-in-effect` in `useReviewLoopSequence.ts`) with a justified, narrowly-scoped suppression -- see DECISIONS.md #12. Scoped ESLint command is back to 0 problems; `next build` succeeds with `/` still static; `tsc --noEmit` clean.
+
+Next step: commit Phase 4, then start Phase 5 (pricing, industry pages, Bozeman page, legal pages, metadata/SEO).
 
 ## Phase 5: Remaining pages and metadata — not started
 
