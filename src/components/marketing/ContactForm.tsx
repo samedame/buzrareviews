@@ -87,7 +87,15 @@ export function ContactForm({ showMeetingChoice = false }: { showMeetingChoice?:
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+      {/* Honeypot: aria-hidden + tabIndex=-1 keep it out of assistive tech
+          and the tab order, and `invisible` (visibility:hidden) keeps its
+          label out of the rendered text a sighted/AT user could otherwise
+          perceive (position:absolute alone, e.g. -left-[9999px], still
+          counts as rendered text to .innerText() -- verified directly
+          against the running build, not assumed). Real bots read the DOM's
+          attributes/textContent regardless of computed visibility, so this
+          doesn't reduce the honeypot's effectiveness against them. */}
+      <div aria-hidden="true" className="invisible absolute -left-[9999px] h-px w-px overflow-hidden">
         <label htmlFor="company-field">Company</label>
         <input type="text" id="company-field" name="company" tabIndex={-1} autoComplete="off" />
       </div>

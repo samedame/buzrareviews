@@ -111,7 +111,14 @@ Bare domain is primary and returns 200; www redirects to it. Note: the redirect 
 - Full gate re-run: `tsc --noEmit` clean, scoped lint clean, `next build` exits 0, full Playwright suite 146 passed / 1 pre-existing failure / 9 skipped (unchanged from Phase 4). Both pages' key new sentences confirmed via curl against the running build, not just read back from source.
 - Both pages are listed in the Phase 9 report as needing Sam's review, and ideally a lawyer's, per the spec.
 
-## Phase 6: Honeypot accessibility — not started
+## Phase 6: Honeypot accessibility — done
+
+- Issue 11. Tested the actual current behavior before changing anything (per A3.2/the spec's own "prove it" philosophy): wrote a throwaway Playwright script against the real running build and found `ContactForm`'s honeypot wrapper -- already `aria-hidden="true"`, `position:absolute -left-[9999px]`, `tabIndex={-1}`, `autoComplete="off"` -- still had "Company" present in the form's `.innerText()` (`position:absolute` alone doesn't exclude text from `.innerText()`; only `display:none`/`visibility:hidden` do), while keyboard Tab correctly never focused it. This matches the issue's actual mechanism: not an AT/axe violation (confirmed axe already passed, 0 violations, before this fix), but a real risk that any tool or workflow reading rendered/selectable page text (not just the accessibility tree) would still surface "Company" as an apparently-real field.
+- Fix: added Tailwind's `invisible` (`visibility: hidden`) to the existing wrapper div, keeping everything else unchanged. Re-ran the same script against the rebuilt site: "Company" no longer appears in `.innerText()`, Tab still never focuses `#company-field`. `visibility:hidden` doesn't reduce the honeypot's effectiveness against real bots, since they read DOM attributes/`textContent` directly, not computed CSS visibility.
+- Re-ran the full axe suite (`-g "axe"`, all 12 routes): still 0 violations everywhere, including `/setup` where the fixed honeypot lives.
+- The Phase 8 dashboard-link form will need the same honeypot pattern; the formal automated `honeypot.spec.ts` (checking both forms) is written in Phase 9 per the spec's own test plan, once that second honeypot exists.
+- Full gate re-run: `tsc --noEmit` clean, scoped lint clean, full Playwright suite 146 passed / 1 pre-existing failure / 9 skipped (unchanged from Phase 5).
+
 ## Phase 7: Unsubscribe + suppression — not started
 ## Phase 8: Dashboard — not started
 ## Phase 9: Tests, gates, report, push — not started
