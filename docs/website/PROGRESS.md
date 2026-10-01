@@ -108,7 +108,7 @@ Next step: commit Phase 5, then start Phase 6 (move onboarding/customers/dashboa
 
 Next step: commit Phase 6, then start Phase 7 (build the full QA harness: Playwright page/funnel/motion specs, Lighthouse, Impeccable detect, copy lint; two critique passes).
 
-## Phase 7: QA and polish — in progress
+## Phase 7: QA and polish — done
 
 **QA harness built** (H1): `qa/playwright.config.ts` (3 projects: mobile/tablet/desktop), `qa/routes.ts`, `qa/copy-lint.ts` (the full G3 banned-phrase list + em/en dash check), `qa/tests/pages.spec.ts` (console/page errors, exactly one h1, no horizontal scroll, axe 0 violations, copy lint, internal link resolution -- all routes x all projects), `qa/tests/funnel.spec.ts` (hero personalization, onboarding `?q=` auto-run, empty-submit validation, tone switch, vertical switch, real clipboard copy, mobile menu focus trap, contact form success/503), `qa/tests/motion.spec.ts` (reduced-motion final-state, full-sequence timing incl. the real 3600-4400ms "Copied" window, 12 choreography frames, LCP-element check, JS-transfer-weight check), `qa/lighthouse.mjs`. `package.json` scripts added (`qa:types`, `qa:e2e`, `qa:lh`, `qa`).
 
@@ -134,8 +134,15 @@ Next step: commit Phase 6, then start Phase 7 (build the full QA harness: Playwr
 - Contrast: DESIGN.md's ledger (S9) has all 10 pairs independently computed and passing; the one contrast *bug* found (opacity-animation false reading) is fixed, not waived.
 - Motion: STANDARDS.md review against `review-animations` skill and the critique passes are still pending (see below).
 
-**Still remaining in Phase 7**: the design-skill review passes (`web-design-guidelines` on changed UI files, `vercel-react-best-practices` on client components, `review-animations/STANDARDS.md` against all motion code, `mobile-native` checklist at 390px) and the two full critique passes with screenshots logged to `docs/website/CRITIQUE_LOG.md` (G5 self-checks per page). Delegating this next to a fork to keep the large volume of skill/screenshot output out of the main thread, per the same reasoning as Phase 1's reference-screenshot review.
+**Critique pass completed** (H3), delegated to a subagent against a local production build (two full passes: home page alone, then all 11 routes at 390/768/1440px), full findings and rationale in `docs/website/CRITIQUE_LOG.md`:
+- 7 real fixes made: loading-state button labels missing the `…` convention (onboarding, customers, dashboard, ContactForm); app-funnel inputs missing `autoComplete`/`name`/`inputMode` (onboarding, customers); one straight-quote-to-curly-quote fix in `faq.ts` (scoped narrowly, sitewide apostrophes left alone as an intentional consistent style); three dashboard buttons missing the `focus-visible` ring every other control has; `MobileMenu`'s dialog changed `h-full` to `h-dvh` (percentage height on a `showModal()` dialog can exceed the visible viewport while browser chrome is showing); a `mobile-native` baseline block added to `globals.css` (tap-highlight, text-size-adjust, touch-action, user-select); a `viewport` export with `themeColor: "#ffffff"` added to `layout.tsx`.
+- Design-skill reviews (`vercel-react-best-practices` on ~20 client components, `review-animations/STANDARDS.md` against every motion file, Tailwind's `hover:` media-query gating, icon-only-button labeling, form error handling) all came back clean, no findings.
+- G5 self-checks (squint/five-second/swap/remove-one-accessory) run per page, all pass; one documented non-bug (the vertical/Bozeman pages' price isn't in the first viewport because MASTER_PROMPT's locked verbatim copy for those pages never mentions "$29" -- a locked-content constraint, not an oversight).
+- Reference comparison against Stripe/Attio screenshots: sanity check only, confirms the left-aligned gradient-free home page and the flat-hairline-bordered product cards are intentional, no changes.
+- Independently re-verified in the main thread (not just trusted from the agent's report): read every diff directly, re-ran scoped ESLint (0 problems), `next typegen && tsc --noEmit` (clean), `next build` (exits 0, all routes still `○`/`●`), and the full Playwright suite (146 passed, 1 failed -- the pre-existing JS-weight gate, unchanged at ~213KB -- 6 skipped, zero regressions). Committed as `58f1edf`.
 
-Next step: commit this checkpoint, then run the design-skill reviews + critique passes, then re-verify every gate one final time before Phase 8-9.
+All Phase 7 gates now final -- see Gates status above, unchanged by this pass except the items explicitly listed as fixed here.
+
+Next step: commit this checkpoint, then start Phase 8 (ship: delete throwaway `.env.local`, final full gate run, push `site/v1`, open PR).
 
 ## Phase 8-9: Ship and report — not started
