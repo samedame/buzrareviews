@@ -48,7 +48,21 @@ Next step: commit Phase 1, then start Phase 2 (write DESIGN.md).
 
 Next step: commit Phase 2, then start Phase 3 (foundation: fonts, tokens, route architecture, pricing.ts).
 
-## Phase 3: Foundation — not started
+## Phase 3: Foundation — done
+
+- `src/lib/pricing.ts` created (`SUBSCRIPTION_PRICE_USD_CENTS = 2900`, `TRIAL_PERIOD_DAYS = 14`); `src/lib/stripe.ts` now re-exports both from it with zero behavior change (confirmed: `src/app/api/checkout/route.ts` is the only other consumer and its import path/usage is unchanged).
+- `src/app/globals.css` rewritten with the full Main Street Gold token set (`@theme` for colors/radii, `@theme inline` only for the two font variables since those are injected at runtime by `next/font`), fluid type-scale utility classes, and the `.paper-card` depth pattern. Dropped the `prefers-color-scheme: dark` block and the Arial fallback per DESIGN.md.
+- `src/app/layout.tsx`: Geist removed, `Libre_Franklin` + `Atkinson_Hyperlegible_Next` loaded as true variable fonts (`weight: "variable"`), `metadataBase` + title template + default description set.
+- `src/config/site.ts` created with all `// TODO(Sam)` fields.
+- Base UI primitives in `src/components/ui/`: `Container`, `VisuallyHidden`, `Icon` (8-icon inline SVG set), `Stars`, `LogoMark`, `ExampleTag`, `Button` (primary/secondary/text, href-or-button polymorphism).
+- Marketing shell in `src/components/marketing/`: `SiteHeader` (scroll border, desktop nav incl. "Who it's for" disclosure, mobile menu trigger), `MobileMenu` (native `<dialog>` + `showModal()`, focus returns to trigger on close), `SiteFooter` (4-column layout, Google trademark line).
+- `src/app/page.tsx` moved to `src/app/(marketing)/page.tsx` via `git mv` (URL unchanged); `(marketing)/layout.tsx` created with a skip link, `SiteHeader`, `<main id="main">`, `SiteFooter`. Home page itself is a Phase-3 stub (real H1/lead copy, no placeholder text) — full section-by-section build is Phase 4.
+- `onboarding`, `customers`, `dashboard` deliberately **not** moved yet — F8 schedules that for Phase 6. They still render under the root layout only (no marketing header/footer, no AppHeader yet) and are unaffected by this phase.
+- Created the throwaway `.env.local` per A4 (did not exist before). Will be deleted at the end per I1.
+- Fixed `eslint.config.mjs` to ignore `.claude/**`, `.agents/**`, `qa-artifacts/**`, `docs/design/references/**` — these vendored tool directories aren't covered by eslint-config-next's default ignores and were producing ~94 bogus warnings unrelated to our code (see DECISIONS.md #6).
+- Verified: `next typegen` clean, `tsc --noEmit` clean, `next build` succeeds with `/` listed as `○` (static); scoped ESLint command 0 problems; `npm run lint` shows exactly the 5 known pre-existing errors. One harmless build warning noted: "Failed to find font override values for font `Atkinson Hyperlegible Next`" (Next.js has no precomputed fallback-font metrics for this newer font family yet — informational only, no fallback font generated, not a regression to chase).
+
+Next step: commit Phase 3, then start Phase 4 (home page sections + the Review Loop demo).
 
 ## Phase 4: Home page — not started
 

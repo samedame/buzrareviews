@@ -1,26 +1,146 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Main Street Gold design tokens. See DESIGN.md for the full system,
+ * rationale, and the contrast ledger backing every pairing used here.
+ * Light theme only -- do not add a prefers-color-scheme: dark block.
+ *
+ * Static tokens (color, radius) live directly in @theme: Tailwind resolves
+ * them at build time and also emits them as :root custom properties, so
+ * there's no need to also declare them in a separate :root block (doing
+ * both under the same names would create a self-referential CSS variable).
+ * Only the font variables use @theme inline, because next/font injects
+ * --font-libre-franklin / --font-atkinson at runtime via a className on
+ * <html>, so Tailwind can't resolve them at build time.
+ */
+@theme {
+  --color-paper: #ffffff;
+  --color-ink: #13251d;
+  --color-ink-2: #3d5249;
+  --color-ink-3: #5c6f66;
+  --color-gold: #f5b000;
+  --color-gold-hover: #e5a400;
+  --color-gold-edge: #a87700;
+  --color-gold-wash: #fff4d6;
+  --color-meadow: #2e6a4f;
+  --color-mist: #eef4f0;
+  --color-line: #dce5df;
+  --color-brick: #b3452f;
+  --color-ink-on-dark: #c9d6cf;
+
+  --radius-chip: 6px;
+  --radius-control: 10px;
+  --radius-search: 14px;
+  --radius-card: 16px;
+  --radius-panel: 24px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-libre-franklin);
+  --font-sans: var(--font-atkinson);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: light;
+
+  /* Motion tokens -- plain CSS vars, not Tailwind utilities. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 140ms;
+  --dur-ui: 200ms;
+  --dur-reveal: 260ms;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Fluid type scale -- see DESIGN.md S3 for the full role table. */
+.text-hero {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.625rem, 1.2rem + 4.6vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.text-h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 1.2rem + 2.6vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.text-h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.375rem, 1.1rem + 0.8vw, 1.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+.text-lead {
+  font-weight: 400;
+  color: var(--color-ink-2);
+  font-size: 1.25rem;
+  line-height: 1.55;
+  max-width: 58ch;
+  text-wrap: pretty;
+}
+
+.text-body {
+  font-weight: 400;
+  font-size: 1.125rem;
+  line-height: 1.6;
+  max-width: 68ch;
+}
+
+.text-small {
+  font-weight: 400;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.text-nav {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: -0.005em;
+}
+
+.text-button {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: -0.005em;
+}
+
+.text-card-micro {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.text-numeral {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Product-mock "paper card" depth -- a defined edge, never a soft glow.
+   Never pair a hairline border with a blurred shadow (DESIGN.md S4). */
+.paper-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: 0 2px 0 rgb(19 37 29 / 0.06);
 }
