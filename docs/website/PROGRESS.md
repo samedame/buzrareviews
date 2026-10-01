@@ -29,7 +29,15 @@ Open issues: none blocking.
 
 Next step: commit Phase 0, then start Phase 1 (capture reference screenshots).
 
-## Phase 1: Study real reference sites — not started
+## Phase 1: Study real reference sites — done
+
+- `qa/capture-references.mjs` written per D1 (desktop 1440x900 + mobile 390x844, scroll positions 0/900/1800, overlay-hiding CSS injected, Escape pressed, burst mode for the 4 "burst" sites). Ran clean against all 18 sites in D2 (owner.com x2, glossgenius, visiblefeedback, stripe x2, attio, granola, linear, resend, mercury, and 7 competitors) — 172 screenshots, zero failures. Screenshots are gitignored under `docs/design/references/`.
+- Delegated the "open every screenshot and look at it" step to a forked subagent (image-viewing is expensive context with no lasting value; the output file is what matters) which wrote `docs/design/REFERENCE_NOTES.md`.
+- Several sites have visibly moved on since the MASTER_PROMPT.md D2 text was written on 2026-09-30 (same day, different hour) — notably Linear's hero is now fully painted at 0ms (not blank at 3s as D2 claimed), Attio has shifted to a centered hero + announcement bar, GlossGenius pivoted its below-fold product moment to an AI chat composer, and three competitors (Weave, Podium, Boulevard) now frame their product as an anthropomorphized "AI Receptionist/Employee." REFERENCE_NOTES.md documents each divergence inline rather than silently trusting the stale D2 text — see DECISIONS.md.
+- Read the two craft articles (emilkowal.ski "You don't need animations," vercel.com/design/guidelines) directly via WebFetch rather than screenshotting — they're reading material, not visual references. Both reinforce the motion/a11y rules already locked in PART E.
+- Files added: `qa/capture-references.mjs`, `docs/design/REFERENCE_NOTES.md`.
+
+Next step: commit Phase 1, then start Phase 2 (write DESIGN.md).
 
 ## Phase 2: Design system (DESIGN.md) — not started
 
