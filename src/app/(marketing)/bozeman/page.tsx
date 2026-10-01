@@ -7,8 +7,8 @@ import { site } from "@/config/site";
 import { BOZEMAN_VISIT_STEPS } from "@/content/bozeman";
 
 export const metadata: Metadata = {
-  title: "In-person setup in Bozeman",
-  description: "Bozeman business? Sam will set up BuzraReviews with you in person, in about 20 minutes.",
+  title: "Online setup with Sam",
+  description: "Need a hand? Sam will set up BuzraReviews with you online, in about 20 minutes.",
   alternates: { canonical: "/bozeman" },
 };
 
@@ -20,11 +20,11 @@ export default function BozemanPage() {
           <div className={`grid gap-10 ${site.mainStreetPhoto ? "lg:grid-cols-[1.4fr_1fr] lg:items-start" : ""}`}>
             <div>
               <h1 id="bozeman-hero-heading" className="text-hero text-ink max-w-[22ch]">
-                Bozeman business? I&apos;ll set it up with you, in person.
+                Need a hand getting set up? I&apos;ll do it with you, online.
               </h1>
               <p className="text-lead text-ink-2 mt-6">
-                I&apos;m Sam, and I build BuzraReviews. If your business is in or around Bozeman, I&apos;ll come
-                to you and get everything running with you. There&apos;s no charge for the visit.
+                I&apos;m Sam, and I build BuzraReviews. Wherever your business is, I&apos;ll get on a call
+                with you and walk through the whole setup together. There&apos;s no charge.
               </p>
 
               <h2 className="text-h3 text-ink mt-10">What we&apos;ll do in about 20 minutes</h2>
@@ -56,11 +56,8 @@ export default function BozemanPage() {
       <section aria-labelledby="bozeman-form-heading" className="bg-mist py-16 sm:py-24">
         <Container className="max-w-xl">
           <h2 id="bozeman-form-heading" className="text-h2 text-ink">
-            Ask Sam for a visit
+            Ask Sam for help
           </h2>
-          <p className="text-body text-ink-2 mt-2">
-            Not in Bozeman? Sam can still set everything up with you online, over a call.
-          </p>
           <div className="mt-8">
             <ContactForm />
           </div>

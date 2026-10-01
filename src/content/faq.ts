@@ -81,8 +81,8 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "whos-behind",
     question: "Who's behind BuzraReviews?",
     answer:
-      "Sam, who builds and runs it in Bozeman, Montana. Businesses in and around Bozeman can get set up in person.",
-    link: { label: "In-person setup in Bozeman", href: "/bozeman" },
+      "Sam, who builds and runs it in Bozeman, Montana. If you get stuck, he'll set it up with you online.",
+    link: { label: "Get help from Sam", href: "/bozeman" },
   },
 ];
 

@@ -120,7 +120,7 @@ test.describe("contact form", () => {
     await page.fill("#contact-name", "Jamie Rivera");
     await page.fill("#contact-business", "Bloom Salon");
     await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Ask Sam for a visit" }).click();
+    await page.getByRole("button", { name: "Ask Sam for help" }).click();
     await expect(page.getByText("Thanks! Sam will reach out to set up a time.")).toBeVisible();
   });
 
@@ -132,7 +132,7 @@ test.describe("contact form", () => {
     await page.fill("#contact-name", "Jamie Rivera");
     await page.fill("#contact-business", "Bloom Salon");
     await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Ask Sam for a visit" }).click();
+    await page.getByRole("button", { name: "Ask Sam for help" }).click();
     await expect(page.getByText("The form isn't connected yet.")).toBeVisible();
   });
 });

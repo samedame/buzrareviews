@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { resend } from '@/lib/resend';
 
 // POST /api/contact
-// Bozeman in-person setup requests from ContactForm. Honeypot + timing
+// Online setup-help requests from ContactForm on /bozeman. Honeypot + timing
 // check silently drop spam (return 200 with no email sent, so bots can't
 // tell they were filtered). Never called for real in QA -- always mocked.
 const ContactSchema = z.object({

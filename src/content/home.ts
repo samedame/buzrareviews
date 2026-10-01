@@ -10,7 +10,7 @@ export const FACTS_BAND = [
   { bold: "No sales call.", rest: "Start on your own, right now." },
   {
     bold: "Made in Bozeman, Montana.",
-    rest: "Local? Sam will set it up with you in person.",
+    rest: "Stuck? Sam will set it up with you online.",
     href: "/bozeman",
   },
 ] as const;
@@ -74,7 +74,7 @@ export const PLAN_INCLUDED = [
   "A daily check for new Google reviews",
   "A drafted reply for each new review, in the tone you choose",
   "Your dashboard, with every review and draft in one place",
-  "Help from a real person, in person if you're in Bozeman",
+  "Help from a real person, online if you get stuck",
 ];
 
 export const PLAN_INCLUDED_DETAILED = [
@@ -95,8 +95,8 @@ export const PLAN_INCLUDED_DETAILED = [
     body: "One link to come back to anytime, with your reviews, drafts, and customers in one place.",
   },
   {
-    title: "Help from a real person, in person if you're in Bozeman",
-    body: "Email Sam anytime, or get set up in person if your business is in or around Bozeman.",
+    title: "Help from a real person, online if you get stuck",
+    body: "Email Sam anytime, or get set up together on a call if you run into trouble.",
   },
 ];
 
