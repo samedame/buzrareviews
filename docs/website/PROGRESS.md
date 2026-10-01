@@ -39,7 +39,14 @@ Next step: commit Phase 0, then start Phase 1 (capture reference screenshots).
 
 Next step: commit Phase 1, then start Phase 2 (write DESIGN.md).
 
-## Phase 2: Design system (DESIGN.md) — not started
+## Phase 2: Design system (DESIGN.md) — done
+
+- `DESIGN.md` written at repo root: concept, full token tables (color/type/layout/components/motion), the "Default vs ours" table (every row grounded in a concrete pattern actually observed in `docs/design/REFERENCE_NOTES.md`, not hypothesized), the "Known tells check" table (walks all 5 `frontend-design` clusters + 6 Impeccable tells and states why each is a clean miss), a contrast ledger, and a pointer to the G5 self-checks (run per-page in Phase 7, logged in CRITIQUE_LOG.md).
+- Pulled the exact 5-cluster list from the installed `frontend-design` plugin's SKILL.md directly (not paraphrased from the master prompt) so the "known tells" table cites the real source language.
+- Independently recomputed all 10 contrast ratios from sRGB relative luminance rather than trusting the brief's rounded numbers — all confirmed to pass WCAG AA with the token values unchanged (see DECISIONS.md #5).
+- Files added: `DESIGN.md`.
+
+Next step: commit Phase 2, then start Phase 3 (foundation: fonts, tokens, route architecture, pricing.ts).
 
 ## Phase 3: Foundation — not started
 
