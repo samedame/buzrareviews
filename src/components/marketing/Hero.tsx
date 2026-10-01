@@ -28,7 +28,7 @@ export function Hero() {
             </p>
 
             <div className="mt-8">
-              <BusinessSearchForm id="hero-search" onQueryChange={setQuery} />
+              <BusinessSearchForm id="hero-search" location="hero" onQueryChange={setQuery} />
             </div>
 
             <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2">

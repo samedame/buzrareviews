@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LazyMotion, domAnimation, MotionConfig, m } from "motion/react";
+import { track } from "@vercel/analytics";
 import { ExampleTag } from "@/components/ui/ExampleTag";
 import { Stars } from "@/components/ui/Stars";
 import {
@@ -55,7 +56,10 @@ export function ToneDemo() {
                   type="button"
                   role="radio"
                   aria-checked={selected}
-                  onClick={() => setTone(t)}
+                  onClick={() => {
+                    setTone(t);
+                    track("tone_switch", { tone: t });
+                  }}
                   className={`rounded-[var(--radius-chip)] px-3 py-1.5 text-small font-medium transition-colors duration-[var(--dur-ui)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
                     selected ? "bg-gold-wash text-ink" : "text-ink-3 hover:text-ink"
                   }`}

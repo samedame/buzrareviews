@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Franklin, Atkinson_Hyperlegible_Next } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { site } from "@/config/site";
 import "./globals.css";
 
@@ -47,7 +49,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${libreFranklin.variable} ${atkinson.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        {process.env.VERCEL === "1" && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
+      </body>
     </html>
   );
 }

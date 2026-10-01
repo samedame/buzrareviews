@@ -96,7 +96,17 @@ Next step: commit Phase 4, then start Phase 5 (pricing, industry pages, Bozeman 
 
 Next step: commit Phase 5, then start Phase 6 (move onboarding/customers/dashboard into `(app)`, implement `/onboarding?q=`, restyle those three pages, wire analytics).
 
-## Phase 6: Funnel continuity (app pages) — not started
+## Phase 6: Funnel continuity (app pages) — done
+
+- Moved `onboarding`, `customers`, `dashboard` into `(app)/` via `git mv` (URLs unchanged, confirmed in the `next build` route list). Added `(app)/layout.tsx` with the new `AppHeader` (logo linking home + "Need help?" link to `/bozeman`).
+- Implemented `/onboarding?q=` (F8): refactored the search submit handler into a standalone `runSearch(q)` function, called both from the form's `onSubmit` and from a mount effect that reads `?q=` off `window.location.search` (same no-Suspense pattern already used on `/customers` and `/dashboard`), trimmed and capped at 100 characters.
+- Restyled all three pages with the design tokens (Container, Button, the new shared `Field`/`TextAreaField`, `Stars`, `Icon`) while preserving every piece of state, every API call, and every behavior exactly -- verified with a scripted Playwright pass against mocked `/api/businesses`, `/api/customers`, and `/api/reviews` endpoints: full onboarding flow (search to confirm to done) with `?q=` auto-run, customers page reading `businessId`/`businessName` from the URL and adding a customer, dashboard auto-loading from a URL `businessId`, and a real clipboard copy on "Copy reply" -- all unchanged from pre-restyle behavior, zero page errors.
+- Made the two allowed accessibility fixes without changing behavior: the dashboard's "Business ID" input now has a real (visually hidden, since the surrounding form context already makes it obvious) `<label>` instead of relying on a placeholder alone -- confirmed present via `label[for="dashboardBusinessId"]`; sentence-cased button labels ("Confirm & create", "Add & send review request") that were previously Title Case.
+- F10 analytics: installed `@vercel/analytics` + `@vercel/speed-insights`, rendered in root `layout.tsx` only when `process.env.VERCEL === "1"`. Wired every named event: `hero_search_submit` (`BusinessSearchForm` now takes a required `location` prop, all 4 call sites updated), `start_trial_click` (header, mobile menu, footer, and both `PlanCard` instances, each with its own `location`), `tone_switch`, `vertical_switch`, `demo_replay`, `contact_submit`. Confirmed via Playwright that interacting with every tracked element throws no errors (the `track()` calls are safe no-ops outside Vercel, as expected locally).
+- Noticed and deliberately left alone (out of scope for a restyle phase, flagged for the final report instead): `/api/businesses`'s catch block passes Google's raw Places API error text straight through to the client on failure -- harmless with a real key, but visible locally with the dummy key from A4.
+- `next build`: `/onboarding`, `/customers`, `/dashboard` still list as `○` static, nothing else changed. Scoped ESLint 0 problems, `tsc --noEmit` clean, `npm run lint` still exactly the 5 known baseline errors.
+
+Next step: commit Phase 6, then start Phase 7 (build the full QA harness: Playwright page/funnel/motion specs, Lighthouse, Impeccable detect, copy lint; two critique passes).
 
 ## Phase 7: QA and polish — not started
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -111,7 +112,9 @@ export function SiteHeader() {
             Your dashboard
           </Link>
           <div className="hidden sm:block">
-            <Button href="/onboarding">Start free trial</Button>
+            <Button href="/onboarding" onClick={() => track("start_trial_click", { location: "header" })}>
+              Start free trial
+            </Button>
           </div>
           <MobileMenu />
         </div>

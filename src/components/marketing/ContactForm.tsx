@@ -1,38 +1,10 @@
 "use client";
 
-import { useState, type FormEvent, type InputHTMLAttributes } from "react";
+import { useState, type FormEvent } from "react";
+import { track } from "@vercel/analytics";
 import { Button } from "@/components/ui/Button";
+import { Field, TextAreaField } from "@/components/ui/Field";
 import { site } from "@/config/site";
-
-function Field({
-  label,
-  name,
-  ...rest
-}: { label: string; name: string } & InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <label className="block">
-      <span className="text-small font-medium text-ink">{label}</span>
-      <input
-        name={name}
-        className="mt-1.5 w-full rounded-[var(--radius-control)] border border-line px-3 py-2.5 text-body text-ink outline-none focus-visible:border-ink"
-        {...rest}
-      />
-    </label>
-  );
-}
-
-function TextAreaField({ label, name }: { label: string; name: string }) {
-  return (
-    <label className="block">
-      <span className="text-small font-medium text-ink">{label}</span>
-      <textarea
-        name={name}
-        rows={4}
-        className="mt-1.5 w-full rounded-[var(--radius-control)] border border-line px-3 py-2.5 text-body text-ink outline-none focus-visible:border-ink"
-      />
-    </label>
-  );
-}
 
 type Status = "idle" | "submitting" | "success" | "error" | "not-connected";
 
@@ -76,6 +48,7 @@ export function ContactForm() {
       }
 
       setStatus("success");
+      track("contact_submit");
       form.reset();
     } catch {
       setErrorMessage("Something went wrong. Please try again.");
@@ -118,11 +91,11 @@ export function ContactForm() {
         <input type="text" id="company-field" name="company" tabIndex={-1} autoComplete="off" />
       </div>
 
-      <Field label="Name" name="name" required autoComplete="name" />
-      <Field label="Business name" name="business" required autoComplete="organization" />
-      <Field label="Email" name="email" type="email" required autoComplete="email" />
-      <Field label="Phone (optional)" name="phone" type="tel" autoComplete="tel" />
-      <TextAreaField label="Message (optional)" name="message" />
+      <Field id="contact-name" label="Name" name="name" required autoComplete="name" />
+      <Field id="contact-business" label="Business name" name="business" required autoComplete="organization" />
+      <Field id="contact-email" label="Email" name="email" type="email" required autoComplete="email" />
+      <Field id="contact-phone" label="Phone (optional)" name="phone" type="tel" autoComplete="tel" />
+      <TextAreaField id="contact-message" label="Message (optional)" name="message" rows={4} />
 
       {status === "error" && (
         <p role="alert" className="text-small text-brick">

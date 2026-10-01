@@ -87,7 +87,7 @@ export default function BozemanPage() {
             Rather do it yourself?
           </h2>
           <div className="mt-8 max-w-xl">
-            <BusinessSearchForm id="bozeman-search" />
+            <BusinessSearchForm id="bozeman-search" location="bozeman" />
           </div>
         </Container>
       </section>

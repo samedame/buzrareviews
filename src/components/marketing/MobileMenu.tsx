@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { VisuallyHidden } from "@/components/ui/VisuallyHidden";
@@ -94,7 +95,14 @@ export function MobileMenu() {
           </nav>
 
           <div className="mt-auto pb-4">
-            <Button href="/onboarding" className="w-full" onClick={closeMenu}>
+            <Button
+              href="/onboarding"
+              className="w-full"
+              onClick={() => {
+                track("start_trial_click", { location: "mobile_menu" });
+                closeMenu();
+              }}
+            >
               Start free trial
             </Button>
           </div>

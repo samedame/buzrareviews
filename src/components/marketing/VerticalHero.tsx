@@ -29,7 +29,7 @@ export function VerticalHero({
             </h1>
             <p className="text-lead text-ink-2 mt-6">{lead}</p>
             <div className="mt-8">
-              <BusinessSearchForm id={searchId} onQueryChange={setQuery} />
+              <BusinessSearchForm id={searchId} location="vertical" onQueryChange={setQuery} />
             </div>
           </div>
           <div className="lg:col-span-6">

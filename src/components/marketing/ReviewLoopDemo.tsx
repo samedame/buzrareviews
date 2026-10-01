@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LazyMotion, domAnimation, MotionConfig, m, AnimatePresence } from "motion/react";
+import { track } from "@vercel/analytics";
 import { ExampleTag } from "@/components/ui/ExampleTag";
 import { EmailCard } from "@/components/marketing/review-loop/EmailCard";
 import { ReviewCard } from "@/components/marketing/review-loop/ReviewCard";
@@ -39,11 +40,13 @@ export function ReviewLoopDemo({
     setVertical(id);
     setMode("from-review");
     setCounter((c) => c + 1);
+    track("vertical_switch", { vertical: id });
   }
 
   function handleReplay() {
     setMode("full");
     setCounter((c) => c + 1);
+    track("demo_replay");
   }
 
   return (

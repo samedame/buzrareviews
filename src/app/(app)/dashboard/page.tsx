@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
+import { Container } from "@/components/ui/Container";
+import { Button } from "@/components/ui/Button";
+import { TextAreaField } from "@/components/ui/Field";
+import { Stars } from "@/components/ui/Stars";
+import { Icon } from "@/components/ui/Icon";
 
 type Review = {
   id: string;
@@ -41,11 +46,6 @@ function formatDate(value: string | null): string {
     month: "short",
     day: "numeric",
   });
-}
-
-function stars(rating: number | null): string {
-  if (!rating) return "";
-  return "★".repeat(rating) + "☆".repeat(Math.max(0, 5 - rating));
 }
 
 export default function DashboardPage() {
@@ -259,228 +259,230 @@ export default function DashboardPage() {
   const isSubscribed = subscriptionStatus === "active" || subscriptionStatus === "trialing";
 
   return (
-    <main className="min-h-screen bg-white">
-      <div className="mx-auto w-full max-w-2xl px-6 py-12">
-        <h1 className="text-2xl font-semibold text-gray-900 text-center">
-          {businessName ? `${businessName} Reviews` : "Reviews"}
-        </h1>
-        <p className="mt-2 text-gray-600 text-center">
-          Here&apos;s how it works: once a day, we check Google for new reviews of your
-          business and draft a reply to each one. Anything found shows up on this page for
-          you to copy into Google yourself.
-        </p>
+    <Container className="max-w-2xl py-16">
+      <h1 className="text-h2 text-ink text-center">{businessName ? `${businessName} reviews` : "Reviews"}</h1>
+      <p className="text-body text-ink-2 mt-2 text-center">
+        Here&apos;s how it works: once a day, we check Google for new reviews of your business and draft a reply
+        to each one. Anything found shows up on this page for you to copy into Google yourself.
+      </p>
 
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            loadDashboard(businessId);
-          }}
-          className="mt-6 flex gap-2"
-        >
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          loadDashboard(businessId);
+        }}
+        className="mt-6"
+      >
+        <label htmlFor="dashboardBusinessId" className="sr-only">
+          Business ID
+        </label>
+        <div className="flex gap-2">
           <input
+            id="dashboardBusinessId"
             type="text"
             value={businessId}
             onChange={(event) => setBusinessId(event.target.value)}
             placeholder="Business ID"
-            className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900"
+            className="flex-1 rounded-[var(--radius-control)] border border-line px-3 py-2.5 text-body text-ink outline-none placeholder:text-ink-3 focus-visible:border-ink"
             required
           />
-          <button
-            type="submit"
-            disabled={loading}
-            className="rounded-md bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
+          <Button type="submit" disabled={loading}>
+            {loading ? "Loading" : "Load"}
+          </Button>
+        </div>
+      </form>
+      <p className="text-small text-ink-3 mt-2 text-center">
+        This is the ID from the link in your confirmation email. Bookmark this page (with the ID filled in) so
+        you can check back anytime.
+      </p>
+
+      {businessId && (
+        <p className="mt-3 text-center text-small">
+          <Link
+            href={`/customers?businessId=${encodeURIComponent(businessId)}&businessName=${encodeURIComponent(businessName)}`}
+            className="text-meadow underline underline-offset-[3px]"
           >
-            {loading ? "Loading…" : "Load"}
-          </button>
-        </form>
-        <p className="mt-2 text-xs text-gray-500 text-center">
-          This is the ID from the link in your confirmation email. Bookmark this page (with
-          the ID filled in) so you can check back anytime.
+            Add another customer
+          </Link>
+          <span className="mt-1 block text-small text-ink-3">
+            We&apos;ll email them asking for a Google review after their visit.
+          </span>
         </p>
+      )}
 
-        {businessId && (
-          <p className="mt-3 text-center text-sm">
-            <Link
-              href={`/customers?businessId=${encodeURIComponent(businessId)}&businessName=${encodeURIComponent(
-                businessName
-              )}`}
-              className="text-gray-600 underline"
-            >
-              Add another customer
-            </Link>
-            <span className="block mt-1 text-xs text-gray-500">
-              We&apos;ll email them asking for a Google review after their visit.
-            </span>
-          </p>
-        )}
-
-        {businessId && (
-          <div className="mt-6 rounded-md border border-gray-200 px-4 py-4 text-center">
-            {justSubscribed && (
-              <p className="mb-2 text-sm font-medium text-green-700">
-                Thanks for subscribing. Your 14-day free trial has started.
-              </p>
-            )}
-
-            {isSubscribed ? (
-              <p className="text-sm text-gray-600">
-                {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} ($29/mo)
-              </p>
-            ) : (
-              <>
-                <p className="text-sm text-gray-600">
-                  Subscribe for $29/mo to keep review checks and AI-drafted replies running.
-                  14-day free trial, cancel anytime.
-                </p>
-                <button
-                  onClick={handleSubscribe}
-                  disabled={checkoutLoading}
-                  className="mt-3 rounded-md bg-gray-900 px-4 py-2 text-white disabled:opacity-50"
-                >
-                  {checkoutLoading ? "Redirecting…" : "Subscribe for $29/mo"}
-                </button>
-              </>
-            )}
-
-            {checkoutError && <p className="mt-2 text-sm text-red-600">{checkoutError}</p>}
-          </div>
-        )}
-
-        {businessId && hasLoaded && (
-          <div className="mt-6 rounded-md border border-gray-200 px-4 py-4">
-            <h2 className="text-sm font-semibold text-gray-900">Reply tone</h2>
-            <p className="mt-1 text-xs text-gray-500">
-              This controls how the AI drafts replies to your reviews. Pick a starting point
-              below or write your own, then save. It only affects replies drafted from now
-              on, reviews already drafted won&apos;t change.
+      {businessId && (
+        <div className="mt-6 rounded-[var(--radius-control)] border border-line px-4 py-4 text-center">
+          {justSubscribed && (
+            <p className="mb-2 text-small font-medium text-meadow">
+              Thanks for subscribing. Your 14-day free trial has started.
             </p>
+          )}
 
-            <div className="mt-3 flex flex-wrap gap-2">
-              {TONE_PRESETS.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => setReplyTone(preset.value)}
-                  className="rounded-full border border-gray-300 px-3 py-1 text-xs text-gray-700 hover:border-gray-900"
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
+          {isSubscribed ? (
+            <p className="text-small text-ink-2">
+              {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} ($29/mo)
+            </p>
+          ) : (
+            <>
+              <p className="text-small text-ink-2">
+                Subscribe for $29/mo to keep review checks and AI-drafted replies running. 14-day free trial,
+                cancel anytime.
+              </p>
+              <div className="mt-3 flex justify-center">
+                <Button onClick={handleSubscribe} disabled={checkoutLoading}>
+                  {checkoutLoading ? "Redirecting" : "Subscribe for $29/mo"}
+                </Button>
+              </div>
+            </>
+          )}
 
-            <textarea
+          {checkoutError && (
+            <p className="mt-2 text-small text-brick" role="alert">
+              {checkoutError}
+            </p>
+          )}
+        </div>
+      )}
+
+      {businessId && hasLoaded && (
+        <div className="mt-6 rounded-[var(--radius-control)] border border-line px-4 py-4">
+          <h2 className="text-small font-semibold text-ink">Reply tone</h2>
+          <p className="text-small text-ink-3 mt-1">
+            This controls how the AI drafts replies to your reviews. Pick a starting point below or write your
+            own, then save. It only affects replies drafted from now on, reviews already drafted won&apos;t
+            change.
+          </p>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {TONE_PRESETS.map((preset) => (
+              <button
+                key={preset.label}
+                type="button"
+                onClick={() => setReplyTone(preset.value)}
+                className="rounded-[var(--radius-chip)] border border-line px-3 py-1 text-small text-ink-2 transition-colors hover:border-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-3">
+            <TextAreaField
+              id="replyTone"
+              label="Reply tone"
+              hideLabel
               value={replyTone}
               onChange={(event) => setReplyTone(event.target.value)}
               rows={2}
-              className="mt-3 w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900"
               placeholder="e.g. friendly and warm, like a small business owner writing personally"
             />
-
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={handleSaveTone}
-                disabled={toneSaving || !replyTone.trim() || replyTone === savedReplyTone}
-                className="rounded-md bg-gray-900 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
-              >
-                {toneSaving ? "Saving…" : "Save tone"}
-              </button>
-              <button
-                type="button"
-                onClick={handlePreviewTone}
-                disabled={previewLoading || !replyTone.trim()}
-                className="rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 disabled:opacity-50"
-              >
-                {previewLoading ? "Generating example…" : "Show me an example"}
-              </button>
-              {toneJustSaved && <span className="text-xs font-medium text-green-700">Saved</span>}
-            </div>
-
-            {toneError && <p className="mt-2 text-xs text-red-600">{toneError}</p>}
-            {previewError && <p className="mt-2 text-xs text-red-600">{previewError}</p>}
-
-            {(previewPositive || previewConstructive) && (
-              <div className="mt-4 space-y-3">
-                <p className="text-xs font-medium text-gray-500">
-                  Example only, these aren&apos;t real reviews
-                </p>
-                {previewPositive && (
-                  <div className="rounded-md bg-gray-50 px-3 py-2">
-                    <p className="text-xs text-gray-500">
-                      5-star review from &quot;Jordan&quot;: &quot;Everyone here was so
-                      welcoming and the service was great from start to finish. Highly
-                      recommend.&quot;
-                    </p>
-                    <p className="mt-2 text-sm text-gray-800">{previewPositive}</p>
-                  </div>
-                )}
-                {previewConstructive && (
-                  <div className="rounded-md bg-gray-50 px-3 py-2">
-                    <p className="text-xs text-gray-500">
-                      2-star review from &quot;Morgan&quot;: &quot;Had to wait a lot longer
-                      than expected and no one really explained what was going on...&quot;
-                    </p>
-                    <p className="mt-2 text-sm text-gray-800">{previewConstructive}</p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
-        )}
 
-        {error && <p className="mt-4 text-sm text-red-600 text-center">{error}</p>}
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleSaveTone}
+              disabled={toneSaving || !replyTone.trim() || replyTone === savedReplyTone}
+              className="rounded-[var(--radius-control)] bg-ink px-3 py-1.5 text-small font-medium text-paper disabled:opacity-50"
+            >
+              {toneSaving ? "Saving" : "Save tone"}
+            </button>
+            <button
+              type="button"
+              onClick={handlePreviewTone}
+              disabled={previewLoading || !replyTone.trim()}
+              className="rounded-[var(--radius-control)] border border-line px-3 py-1.5 text-small font-medium text-ink-2 disabled:opacity-50"
+            >
+              {previewLoading ? "Generating example" : "Show me an example"}
+            </button>
+            {toneJustSaved && <span className="text-small font-medium text-meadow">Saved</span>}
+          </div>
 
-        {hasLoaded && reviews.length === 0 && !error && (
-          <p className="mt-10 text-center text-gray-500">
-            {businessName || "This business"} is all set up and we checked Google just now,
-            nothing new has come in yet. We check again once a day, so it&apos;s worth coming
-            back tomorrow, especially once you&apos;ve added customers above.
-          </p>
-        )}
+          {toneError && (
+            <p className="mt-2 text-small text-brick" role="alert">
+              {toneError}
+            </p>
+          )}
+          {previewError && (
+            <p className="mt-2 text-small text-brick" role="alert">
+              {previewError}
+            </p>
+          )}
 
-        <ul className="mt-8 space-y-4">
-          {reviews.map((review) => (
-            <li key={review.id} className="rounded-md border border-gray-200 px-4 py-4">
-              <div className="flex items-center justify-between">
-                <p className="font-medium text-gray-900">
-                  {review.author_name ?? "Anonymous"}
-                </p>
-                <p className="text-amber-500" aria-label={`${review.rating ?? 0} out of 5 stars`}>
-                  {stars(review.rating)}
-                </p>
-              </div>
-              <p className="text-xs text-gray-500">{formatDate(review.review_time)}</p>
-
-              {review.review_text && (
-                <p className="mt-2 text-sm text-gray-700">{review.review_text}</p>
-              )}
-
-              <div className="mt-3 rounded-md bg-gray-50 px-3 py-2">
-                <p className="text-xs font-medium text-gray-500">AI-drafted reply</p>
-                {review.ai_draft_reply ? (
-                  <>
-                    <p className="mt-1 text-sm text-gray-800">{review.ai_draft_reply}</p>
-                    <button
-                      onClick={() => handleCopy(review)}
-                      className="mt-2 text-sm font-medium text-gray-900 underline"
-                    >
-                      {copiedId === review.id ? "Copied" : "Copy reply"}
-                    </button>
-                    <p className="mt-1 text-xs text-gray-500">
-                      Copy this and paste it into your reply box on Google, we don&apos;t
-                      post it for you.
-                    </p>
-                  </>
-                ) : (
-                  <p className="mt-1 text-sm text-gray-500">
-                    Draft pending. Check back after the next review check.
+          {(previewPositive || previewConstructive) && (
+            <div className="mt-4 flex flex-col gap-3">
+              <p className="text-small font-medium text-ink-3">Example only, these aren&apos;t real reviews</p>
+              {previewPositive && (
+                <div className="rounded-[var(--radius-control)] bg-mist px-3 py-2">
+                  <p className="text-small text-ink-3">
+                    5-star review from &quot;Jordan&quot;: &quot;Everyone here was so welcoming and the service
+                    was great from start to finish. Highly recommend.&quot;
                   </p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </main>
+                  <p className="text-body text-ink mt-2">{previewPositive}</p>
+                </div>
+              )}
+              {previewConstructive && (
+                <div className="rounded-[var(--radius-control)] bg-mist px-3 py-2">
+                  <p className="text-small text-ink-3">
+                    2-star review from &quot;Morgan&quot;: &quot;Had to wait a lot longer than expected and no
+                    one really explained what was going on.&quot;
+                  </p>
+                  <p className="text-body text-ink mt-2">{previewConstructive}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {error && (
+        <p className="text-small text-brick mt-4 text-center" role="alert">
+          {error}
+        </p>
+      )}
+
+      {hasLoaded && reviews.length === 0 && !error && (
+        <p className="text-body text-ink-3 mt-10 text-center">
+          {businessName || "This business"} is all set up and we checked Google just now, nothing new has come
+          in yet. We check again once a day, so it&apos;s worth coming back tomorrow, especially once you&apos;ve
+          added customers above.
+        </p>
+      )}
+
+      <ul className="mt-8 flex flex-col gap-4">
+        {reviews.map((review) => (
+          <li key={review.id} className="rounded-[var(--radius-card)] border border-line px-4 py-4">
+            <div className="flex items-center justify-between">
+              <p className="text-body font-medium text-ink">{review.author_name ?? "Anonymous"}</p>
+              {review.rating && <Stars rating={review.rating} size={16} />}
+            </div>
+            <p className="text-small text-ink-3">{formatDate(review.review_time)}</p>
+
+            {review.review_text && <p className="text-small text-ink-2 mt-2">{review.review_text}</p>}
+
+            <div className="mt-3 rounded-[var(--radius-control)] bg-mist px-3 py-2">
+              <p className="text-small font-medium text-ink-3">AI-drafted reply</p>
+              {review.ai_draft_reply ? (
+                <>
+                  <p className="text-small text-ink mt-1">{review.ai_draft_reply}</p>
+                  <button
+                    onClick={() => handleCopy(review)}
+                    className="mt-2 inline-flex items-center gap-1.5 text-small font-medium text-ink underline underline-offset-[3px]"
+                  >
+                    <Icon name={copiedId === review.id ? "check" : "copy"} size={14} />
+                    {copiedId === review.id ? "Copied" : "Copy reply"}
+                  </button>
+                  <p className="text-small text-ink-3 mt-1">
+                    Copy this and paste it into your reply box on Google, we don&apos;t post it for you.
+                  </p>
+                </>
+              ) : (
+                <p className="text-small text-ink-3 mt-1">Draft pending. Check back after the next review check.</p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Container>
   );
 }

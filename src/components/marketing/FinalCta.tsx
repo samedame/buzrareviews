@@ -14,7 +14,7 @@ export function FinalCta() {
           Setup takes a few minutes. Your first review request can go out today.
         </p>
         <div className="mx-auto mt-8 max-w-xl text-left">
-          <BusinessSearchForm id="final-cta-search" variant="dark" />
+          <BusinessSearchForm id="final-cta-search" variant="dark" location="final" />
         </div>
         <ul className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2">
           {FACTS_ROW.map((fact) => (

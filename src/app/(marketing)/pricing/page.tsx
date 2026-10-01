@@ -24,7 +24,7 @@ export default function PricingPage() {
           </h1>
           <p className="text-lead text-ink-2 mt-6">No tiers, no contract, no sales call. Try it free for 14 days.</p>
           <div className="mt-10 max-w-md">
-            <PlanCard />
+            <PlanCard location="pricing_page" />
           </div>
         </Container>
       </section>

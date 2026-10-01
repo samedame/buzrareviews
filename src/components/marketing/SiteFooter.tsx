@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { LogoMark } from "@/components/ui/LogoMark";
+import { TrackedStartTrialLink } from "@/components/marketing/TrackedStartTrialLink";
 import { site } from "@/config/site";
 
 function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
@@ -43,7 +44,9 @@ export function SiteFooter() {
             <FooterLink href="/#how-it-works">How it works</FooterLink>
             <FooterLink href="/pricing">Pricing</FooterLink>
             <FooterLink href="/dashboard">Your dashboard</FooterLink>
-            <FooterLink href="/onboarding">Start free trial</FooterLink>
+            <li>
+              <TrackedStartTrialLink className="text-small text-ink hover:text-meadow" location="footer" />
+            </li>
           </FooterColumn>
 
           <FooterColumn title="Who it's for">

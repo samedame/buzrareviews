@@ -2,15 +2,18 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { Button } from "@/components/ui/Button";
 
 export function BusinessSearchForm({
   id,
   variant = "light",
+  location,
   onQueryChange,
 }: {
   id: string;
   variant?: "light" | "dark";
+  location: "hero" | "final" | "vertical" | "bozeman";
   onQueryChange?: (value: string) => void;
 }) {
   const router = useRouter();
@@ -35,6 +38,7 @@ export function BusinessSearchForm({
       return;
     }
     setError(false);
+    track("hero_search_submit", { location });
     router.push(`/onboarding?q=${encodeURIComponent(trimmed)}`);
   }
 

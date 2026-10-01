@@ -45,7 +45,7 @@ export default function HomePage() {
           </h2>
           <p className="text-lead text-ink-2 mt-4">Everything BuzraReviews does, for one flat price.</p>
           <div className="mt-10 grid gap-10 lg:grid-cols-2 lg:items-start">
-            <PlanCard />
+            <PlanCard location="home_pricing" />
             <div className="max-w-[58ch]">
               <p className="text-body text-ink-2">
                 Many review platforms charge hundreds of dollars a month and ask for an annual contract. A

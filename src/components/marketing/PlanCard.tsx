@@ -1,9 +1,12 @@
+"use client";
+
+import { track } from "@vercel/analytics";
 import { SUBSCRIPTION_PRICE_USD_CENTS, TRIAL_PERIOD_DAYS } from "@/lib/pricing";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { PLAN_INCLUDED } from "@/content/home";
 
-export function PlanCard() {
+export function PlanCard({ location }: { location: string }) {
   const price = Math.round(SUBSCRIPTION_PRICE_USD_CENTS / 100);
 
   return (
@@ -24,7 +27,12 @@ export function PlanCard() {
       </ul>
 
       <div className="mt-6">
-        <Button href="/onboarding" size="large" className="w-full">
+        <Button
+          href="/onboarding"
+          size="large"
+          className="w-full"
+          onClick={() => track("start_trial_click", { location })}
+        >
           Start free trial
         </Button>
       </div>
