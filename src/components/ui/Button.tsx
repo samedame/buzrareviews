@@ -5,7 +5,7 @@ type Variant = "primary" | "secondary" | "text";
 type Size = "default" | "large";
 
 const base =
-  "inline-flex items-center justify-center gap-2 text-button rounded-[var(--radius-control)] transition-transform duration-[var(--dur-press)] active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-button rounded-[var(--radius-control)] transition-transform duration-[var(--dur-press)] active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink";
 
 const variants: Record<Variant, string> = {
   primary:

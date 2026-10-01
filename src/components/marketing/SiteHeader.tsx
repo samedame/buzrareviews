@@ -110,9 +110,9 @@ export function SiteHeader() {
           <Link href="/dashboard" className="hidden sm:inline text-nav text-meadow underline underline-offset-[3px]">
             Your dashboard
           </Link>
-          <Button href="/onboarding" className="hidden sm:inline-flex">
-            Start free trial
-          </Button>
+          <div className="hidden sm:block">
+            <Button href="/onboarding">Start free trial</Button>
+          </div>
           <MobileMenu />
         </div>
       </Container>
