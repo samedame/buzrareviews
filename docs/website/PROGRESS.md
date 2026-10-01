@@ -81,7 +81,20 @@ Next step: commit Phase 3, then start Phase 4 (home page sections + the Review L
 
 Next step: commit Phase 4, then start Phase 5 (pricing, industry pages, Bozeman page, legal pages, metadata/SEO).
 
-## Phase 5: Remaining pages and metadata — not started
+## Phase 5: Remaining marketing pages and metadata — done
+
+- `/pricing` (F3): plan card, "What's included" (expanded 5-item descriptions in `src/content/home.ts`), "What you won't pay for," pricing-specific FAQ subset, final CTA.
+- Industry pages (F4): one dynamic route (`src/app/(marketing)/for/[vertical]/page.tsx`, `generateStaticParams` + `dynamicParams = false`, so unknown verticals 404 instead of rendering on-demand) driven by `src/content/verticals.ts`. Shared `VerticalPageTemplate` + `VerticalHero` (demo locked to the vertical, no switch) render all three of `/for/salons`, `/for/dental`, `/for/restaurants`, all building as static (`●` SSG) per the build output.
+- `/bozeman` (F5): founder-voice hero, numbered 20-minute visit sequence, `ContactForm` (honeypot + `startedAt` timing field, posts to `/api/contact`, handles success/503/error states distinctly), conditional "Prefer email?"/"Pick a time" links, a `BusinessSearchForm` for the DIY path, and a Main Street photo slot that collapses cleanly when unconfigured (added `site.mainStreetPhoto`, not in F1's original field list -- see DECISIONS.md #14).
+- `/api/contact` (F9, pulled into this phase since `/bozeman` depends on it): zod-validated, honeypot + 3-second minimum-fill-time spam check (silently returns `{ ok: true }` without sending), 503 when `CONTACT_TO_EMAIL` is unset, sends via the existing `resend` client with `replyTo` set to the visitor's email (verified the SDK's exact field name from its `.d.mts`). Added `CONTACT_TO_EMAIL` to `.env.local.example` with a comment, per A4's one allowed exception.
+- `/privacy` and `/terms` (F6): full plain-English text per the X5 outlines, including the required SMS/A2P 10DLC language, inside a shared `LegalLayout`/`LegalSection` (max 68ch, H2 per section, "Last updated" date). Flagged for Sam's (and ideally a lawyer's) review in the final report, not labeled "draft" anywhere on the page itself.
+- Metadata/SEO (F7): root `layout.tsx` now sets full Open Graph + Twitter card fields (once, at root, per spec's literal wording -- each page only overrides `title`/`description`/`alternates.canonical`); `opengraph-image.tsx` using a real downloaded static Libre Franklin ExtraBold TTF (see DECISIONS.md #16); `JsonLd` (Organization + SoftwareApplication, deliberately no `aggregateRating`/`review`) rendered in `(marketing)/layout.tsx`; `sitemap.ts` and `robots.ts`; branded `not-found.tsx`; `icon.svg` + code-generated `apple-icon.tsx` (replacing the stock `favicon.ico`, see DECISIONS.md #15).
+- `docs/website/CLAIMS.md` written and cross-checked against `src/lib/resend.ts`, `anthropic.ts`, `pricing.ts`, `places.ts`, `vercel.json`, and `api/checkout/route.ts` -- every claim on every page built so far traces to a real source; nothing from B2's "not allowed" column slipped in.
+- Fixed two real lint errors from this phase's code before commit: an unescaped apostrophe in `/privacy` (`react/no-unescaped-entities`) and an impure `Date.now()` call in `ContactForm` (`react-hooks/purity` -- switched `useRef(Date.now())` to `useState(() => Date.now())`). See DECISIONS.md #13.
+- Verified via screenshots at 390/1440: `/pricing`, `/for/salons`, `/for/dental`, `/bozeman`, `/privacy`, `/terms`, and the 404 page all render cleanly, on-brand, with the Review Loop demo resolving identically on vertical pages as on the home page (one screenshot caught mid-animation initially -- confirmed not a bug by re-shooting after the full 4.4s sequence).
+- `next build`: all new routes list as `○` or `●` static. Scoped ESLint 0 problems, `tsc --noEmit` clean, `npm run lint` still shows only the 5 known baseline errors.
+
+Next step: commit Phase 5, then start Phase 6 (move onboarding/customers/dashboard into `(app)`, implement `/onboarding?q=`, restyle those three pages, wire analytics).
 
 ## Phase 6: Funnel continuity (app pages) — not started
 

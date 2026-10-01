@@ -15,14 +15,30 @@ const atkinson = Atkinson_Hyperlegible_Next({
   weight: "variable",
 });
 
+const DEFAULT_TITLE = `${site.name}: Google reviews for local businesses`;
+const DEFAULT_DESCRIPTION =
+  "Ask every customer for a Google review and answer every review in your voice. Review request emails and drafted replies, $29 a month, no contract.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
     template: `%s | ${site.name}`,
-    default: `${site.name}: Google reviews for local businesses`,
+    default: DEFAULT_TITLE,
   },
-  description:
-    "Ask every customer for a Google review and answer every review in your voice. Review request emails and drafted replies, $29 a month, no contract.",
+  description: DEFAULT_DESCRIPTION,
+  openGraph: {
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    url: site.url,
+    siteName: site.name,
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

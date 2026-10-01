@@ -77,6 +77,29 @@ export const PLAN_INCLUDED = [
   "Help from a real person, in person if you're in Bozeman",
 ];
 
+export const PLAN_INCLUDED_DETAILED = [
+  {
+    title: "Review request emails, sent from your business name",
+    body: "Right after you add a customer, they get a short email asking for a Google review, sent from your business's name.",
+  },
+  {
+    title: "A daily check for new Google reviews",
+    body: "Once a day, BuzraReviews checks Google for anything new and brings it into your dashboard.",
+  },
+  {
+    title: "A drafted reply for each new review, in the tone you choose",
+    body: "Every new review gets a reply drafted in your tone, ready to copy and paste.",
+  },
+  {
+    title: "Your dashboard, with every review and draft in one place",
+    body: "One link to come back to anytime, with your reviews, drafts, and customers in one place.",
+  },
+  {
+    title: "Help from a real person, in person if you're in Bozeman",
+    body: "Email Sam anytime, or get set up in person if your business is in or around Bozeman.",
+  },
+];
+
 export const PLAN_NOT_INCLUDED = [
   "Setup fees.",
   "An annual contract.",

@@ -5,6 +5,8 @@ export const site = {
   founderName: "Sam",
   // TODO(Sam): set to "/images/sam-portrait.jpg" once you've shot and added the photo (see docs/website/SHOT_LIST.md).
   founderPhoto: null as string | null,
+  // TODO(Sam): set to "/images/main-street-1.jpg" once you've shot and added a Main Street photo (see docs/website/SHOT_LIST.md).
+  mainStreetPhoto: null as string | null,
   // TODO(Sam): set to your inbox once CONTACT_TO_EMAIL is configured in Vercel, e.g. "sam@buzrareviews.com".
   contactEmail: null as string | null,
   // TODO(Sam): set if you want a phone number shown anywhere on the site, e.g. "+1 (406) 555-0100".
