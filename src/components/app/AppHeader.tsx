@@ -11,7 +11,7 @@ export function AppHeader() {
           <LogoMark />
           <span className="text-nav text-ink text-lg">{site.name}</span>
         </Link>
-        <Link href="/bozeman" className="text-small text-meadow underline underline-offset-[3px]">
+        <Link href="/setup" className="text-small text-meadow underline underline-offset-[3px]">
           Need help?
         </Link>
       </Container>

@@ -169,8 +169,8 @@ export default function OnboardingPage() {
 
           <p className="mt-8 text-small text-ink-2 text-center">
             Having trouble?{" "}
-            <Link href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-              Sam will set it up with you online
+            <Link href="/setup" className="text-meadow underline underline-offset-[3px]">
+              Sam can help you set it up
             </Link>
             .
           </p>

@@ -86,8 +86,8 @@ export function MobileMenu() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/bozeman" onClick={closeMenu} className="text-nav text-ink py-3">
-              Bozeman
+            <Link href="/setup" onClick={closeMenu} className="text-nav text-ink py-3">
+              Setup help
             </Link>
             <Link href="/dashboard" onClick={closeMenu} className="text-nav text-ink py-3">
               Your dashboard

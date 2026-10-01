@@ -116,11 +116,11 @@ test.describe("contact form", () => {
     await page.route("**/api/contact", (route) =>
       route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) })
     );
-    await page.goto("/bozeman", { waitUntil: "load" });
+    await page.goto("/setup", { waitUntil: "load" });
     await page.fill("#contact-name", "Jamie Rivera");
     await page.fill("#contact-business", "Bloom Salon");
     await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Set up a call with Sam" }).click();
+    await page.getByRole("button", { name: "Send my request" }).click();
     await expect(page.getByText("Thanks! Sam will reach out to set up a time.")).toBeVisible();
   });
 
@@ -128,11 +128,11 @@ test.describe("contact form", () => {
     await page.route("**/api/contact", (route) =>
       route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "not connected" }) })
     );
-    await page.goto("/bozeman", { waitUntil: "load" });
+    await page.goto("/setup", { waitUntil: "load" });
     await page.fill("#contact-name", "Jamie Rivera");
     await page.fill("#contact-business", "Bloom Salon");
     await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Set up a call with Sam" }).click();
+    await page.getByRole("button", { name: "Send my request" }).click();
     await expect(page.getByText("The form isn't connected yet.")).toBeVisible();
   });
 });

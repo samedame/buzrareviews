@@ -15,8 +15,8 @@ export default function PrivacyPage() {
         <p>
           BuzraReviews is built and run by {site.founderName}, based in {site.city}. If you have a question about
           this policy or about your information, you can reach us through the contact form on{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            our Bozeman page
+          <a href="/setup" className="text-meadow underline underline-offset-[3px]">
+            our setup page
           </a>
           {site.contactEmail ? (
             <>
@@ -88,8 +88,8 @@ export default function PrivacyPage() {
       <LegalSection heading="Contact">
         <p>
           Questions about this policy can go through the contact form on{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            our Bozeman page
+          <a href="/setup" className="text-meadow underline underline-offset-[3px]">
+            our setup page
           </a>
           {site.contactEmail && (
             <>

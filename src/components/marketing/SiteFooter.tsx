@@ -53,10 +53,10 @@ export function SiteFooter() {
             <FooterLink href="/for/salons">Salons and barbershops</FooterLink>
             <FooterLink href="/for/dental">Dental offices</FooterLink>
             <FooterLink href="/for/restaurants">Restaurants and cafes</FooterLink>
-            <FooterLink href="/bozeman">In-person setup in Bozeman</FooterLink>
           </FooterColumn>
 
           <FooterColumn title="Company">
+            <FooterLink href="/setup">Setup help</FooterLink>
             {site.contactEmail && <FooterLink href={`mailto:${site.contactEmail}`}>Contact</FooterLink>}
             <FooterLink href="/privacy">Privacy</FooterLink>
             <FooterLink href="/terms">Terms</FooterLink>

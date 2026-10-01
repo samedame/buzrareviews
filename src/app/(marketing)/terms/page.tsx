@@ -79,8 +79,8 @@ export default function TermsPage() {
             Privacy Policy
           </a>
           ). For support, use the contact form on our{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            Bozeman page
+          <a href="/setup" className="text-meadow underline underline-offset-[3px]">
+            setup page
           </a>
           .
         </p>
@@ -135,8 +135,8 @@ export default function TermsPage() {
       <LegalSection heading="Contact">
         <p>
           Questions about these terms can go through the contact form on{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            our Bozeman page
+          <a href="/setup" className="text-meadow underline underline-offset-[3px]">
+            our setup page
           </a>
           {site.contactEmail && (
             <>

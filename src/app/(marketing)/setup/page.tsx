@@ -4,32 +4,52 @@ import { Container } from "@/components/ui/Container";
 import { ContactForm } from "@/components/marketing/ContactForm";
 import { BusinessSearchForm } from "@/components/marketing/BusinessSearchForm";
 import { site } from "@/config/site";
-import { BOZEMAN_VISIT_STEPS } from "@/content/bozeman";
+import { SETUP_VISIT_STEPS } from "@/content/setup";
 
-export const metadata: Metadata = {
-  title: "Online setup with Sam",
-  description: "Need a hand? Sam will set up BuzraReviews with you online, in about 20 minutes.",
-  alternates: { canonical: "/bozeman" },
-};
+export const metadata: Metadata = site.inPersonInBozeman
+  ? {
+      title: "Setup help from Sam",
+      description: "Need a hand? Sam will set up BuzraReviews with you on a call, or in person in Bozeman, in about 20 minutes.",
+      alternates: { canonical: "/setup" },
+    }
+  : {
+      title: "Setup help from Sam",
+      description: "Need a hand? Sam will set up BuzraReviews with you on a call, in about 20 minutes.",
+      alternates: { canonical: "/setup" },
+    };
 
-export default function BozemanPage() {
+export default function SetupPage() {
   return (
     <>
-      <section aria-labelledby="bozeman-hero-heading" className="py-10 sm:py-16">
+      <section aria-labelledby="setup-hero-heading" className="py-10 sm:py-16">
         <Container>
           <div className={`grid gap-10 ${site.mainStreetPhoto ? "lg:grid-cols-[1.4fr_1fr] lg:items-start" : ""}`}>
             <div>
-              <h1 id="bozeman-hero-heading" className="text-hero text-ink max-w-[22ch]">
-                Need a hand getting set up? I&apos;ll do it with you, online.
+              <h1 id="setup-hero-heading" className="text-hero text-ink max-w-[22ch]">
+                Need a hand getting set up? I&apos;ll do it with you.
               </h1>
               <p className="text-lead text-ink-2 mt-6">
-                I&apos;m Sam, and I build BuzraReviews. Wherever your business is, I&apos;ll get on a call
-                with you and walk through the whole setup together. There&apos;s no charge.
+                {site.inPersonInBozeman
+                  ? "I'm Sam, and I build BuzraReviews. Wherever your business is, I'll get on a call and walk through the whole setup with you. If you're in or around Bozeman, I'll come by in person. There's no charge either way."
+                  : "I'm Sam, and I build BuzraReviews. Wherever your business is, I'll get on a call and walk through the whole setup with you. There's no charge."}
               </p>
+
+              <div className={`mt-10 grid gap-6 ${site.inPersonInBozeman ? "sm:grid-cols-2" : ""}`}>
+                <div>
+                  <h2 className="text-h3 text-ink">On a call, anywhere.</h2>
+                  <p className="text-body text-ink-2 mt-2">Video or phone, whichever is easier. About 20 minutes.</p>
+                </div>
+                {site.inPersonInBozeman && (
+                  <div>
+                    <h2 className="text-h3 text-ink">In person, in Bozeman.</h2>
+                    <p className="text-body text-ink-2 mt-2">I&apos;ll come to your business and we&apos;ll set it up together.</p>
+                  </div>
+                )}
+              </div>
 
               <h2 className="text-h3 text-ink mt-10">What we&apos;ll do in about 20 minutes</h2>
               <ol className="mt-4 flex flex-col gap-3">
-                {BOZEMAN_VISIT_STEPS.map((step) => (
+                {SETUP_VISIT_STEPS.map((step) => (
                   <li key={step.number} className="flex gap-3 text-body text-ink-2">
                     <span className="text-ink-3">{step.number}</span>
                     {step.title}
@@ -53,19 +73,23 @@ export default function BozemanPage() {
         </Container>
       </section>
 
-      <section aria-labelledby="bozeman-form-heading" className="bg-mist py-16 sm:py-24">
+      <section aria-labelledby="setup-form-heading" className="bg-mist py-16 sm:py-24">
         <Container className="max-w-xl">
-          <h2 id="bozeman-form-heading" className="text-h2 text-ink">
-            Set up a call with Sam
+          <h2 id="setup-form-heading" className="text-h2 text-ink">
+            Ask Sam for setup help
           </h2>
           <div className="mt-8">
-            <ContactForm />
+            <ContactForm showMeetingChoice={site.inPersonInBozeman} />
           </div>
           <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
             {site.contactEmail && (
-              <a href={`mailto:${site.contactEmail}`} className="text-small text-meadow underline underline-offset-[3px]">
-                Prefer email?
-              </a>
+              <p className="text-small text-ink-2">
+                Prefer email? Write to Sam at{" "}
+                <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+                  {site.contactEmail}
+                </a>
+                .
+              </p>
             )}
             {site.bookingUrl && (
               <a
@@ -81,13 +105,13 @@ export default function BozemanPage() {
         </Container>
       </section>
 
-      <section aria-labelledby="bozeman-diy-heading" className="py-16 sm:py-24">
+      <section aria-labelledby="setup-diy-heading" className="py-16 sm:py-24">
         <Container>
-          <h2 id="bozeman-diy-heading" className="text-h2 text-ink">
+          <h2 id="setup-diy-heading" className="text-h2 text-ink">
             Rather do it yourself?
           </h2>
           <div className="mt-8 max-w-xl">
-            <BusinessSearchForm id="bozeman-search" location="bozeman" />
+            <BusinessSearchForm id="setup-search" location="setup" />
           </div>
         </Container>
       </section>

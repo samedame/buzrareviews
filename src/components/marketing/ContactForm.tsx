@@ -8,7 +8,7 @@ import { site } from "@/config/site";
 
 type Status = "idle" | "submitting" | "success" | "error" | "not-connected";
 
-export function ContactForm() {
+export function ContactForm({ showMeetingChoice = false }: { showMeetingChoice?: boolean }) {
   const [startedAt] = useState(() => Date.now());
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -26,6 +26,7 @@ export function ContactForm() {
       phone: String(data.get("phone") ?? "") || undefined,
       message: String(data.get("message") ?? "") || undefined,
       company: String(data.get("company") ?? ""),
+      meeting: showMeetingChoice ? String(data.get("meeting") ?? "call") : undefined,
       startedAt,
     };
 
@@ -97,6 +98,20 @@ export function ContactForm() {
       <Field id="contact-phone" label="Phone (optional)" name="phone" type="tel" autoComplete="tel" />
       <TextAreaField id="contact-message" label="Message (optional)" name="message" rows={4} />
 
+      {showMeetingChoice && (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-small font-medium text-ink">How should we meet?</legend>
+          <label className="flex items-center gap-2 text-small text-ink-2">
+            <input type="radio" name="meeting" value="call" defaultChecked />
+            On a call
+          </label>
+          <label className="flex items-center gap-2 text-small text-ink-2">
+            <input type="radio" name="meeting" value="in_person" />
+            In person in Bozeman
+          </label>
+        </fieldset>
+      )}
+
       {status === "error" && (
         <p role="alert" className="text-small text-brick">
           {errorMessage}
@@ -104,7 +119,7 @@ export function ContactForm() {
       )}
 
       <Button type="submit" size="large" disabled={status === "submitting"}>
-        {status === "submitting" ? "Sending…" : "Set up a call with Sam"}
+        {status === "submitting" ? "Sending…" : "Send my request"}
       </Button>
     </form>
   );

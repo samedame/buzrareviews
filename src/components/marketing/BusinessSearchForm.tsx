@@ -13,7 +13,7 @@ export function BusinessSearchForm({
 }: {
   id: string;
   variant?: "light" | "dark";
-  location: "hero" | "final" | "vertical" | "bozeman";
+  location: "hero" | "final" | "vertical" | "setup";
   onQueryChange?: (value: string) => void;
 }) {
   const router = useRouter();

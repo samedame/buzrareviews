@@ -4,7 +4,7 @@ export const MARKETING_ROUTES = [
   "/for/salons",
   "/for/dental",
   "/for/restaurants",
-  "/bozeman",
+  "/setup",
   "/privacy",
   "/terms",
 ];

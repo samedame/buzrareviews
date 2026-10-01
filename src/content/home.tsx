@@ -1,3 +1,18 @@
+import { site } from "@/config/site";
+
+// Issue 1: "Email Sam" in the plan-included detail must be a real, visible
+// link, not plain text -- PLAN_INCLUDED_DETAILED's `body` is a ReactNode
+// (not just string) specifically so this one entry can carry it inline.
+function emailSamLink() {
+  return site.contactEmail ? (
+    <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+      Email Sam
+    </a>
+  ) : (
+    "Email Sam"
+  );
+}
+
 export const FACTS_ROW = [
   "14-day free trial",
   "Set up in a few minutes",
@@ -10,8 +25,10 @@ export const FACTS_BAND = [
   { bold: "No sales call.", rest: "Start on your own, right now." },
   {
     bold: "Made in Bozeman, Montana.",
-    rest: "Stuck? Sam will set it up with you online.",
-    href: "/bozeman",
+    rest: site.inPersonInBozeman
+      ? "Stuck? Sam will set it up with you, on a call or in person."
+      : "Stuck? Sam will set it up with you on a call.",
+    href: "/setup",
   },
 ] as const;
 
@@ -74,7 +91,9 @@ export const PLAN_INCLUDED = [
   "A daily check for new Google reviews",
   "A drafted reply for each new review, in the tone you choose",
   "Your dashboard, with every review and draft in one place",
-  "Help from a real person, online if you get stuck",
+  site.inPersonInBozeman
+    ? "Help from a real person, on a call or in person in Bozeman"
+    : "Help from a real person, on a call if you get stuck",
 ];
 
 export const PLAN_INCLUDED_DETAILED = [
@@ -95,8 +114,14 @@ export const PLAN_INCLUDED_DETAILED = [
     body: "One link to come back to anytime, with your reviews, drafts, and customers in one place.",
   },
   {
-    title: "Help from a real person, online if you get stuck",
-    body: "Email Sam anytime, or get set up together on a call if you run into trouble.",
+    title: site.inPersonInBozeman
+      ? "Help from a real person, on a call or in person in Bozeman"
+      : "Help from a real person, on a call if you get stuck",
+    body: site.inPersonInBozeman ? (
+      <>{emailSamLink()} anytime. If you get stuck, Sam will set it up with you on a call, or in person if you&apos;re in or around Bozeman.</>
+    ) : (
+      <>{emailSamLink()} anytime. If you get stuck, Sam will set it up with you on a call.</>
+    ),
   },
 ];
 
@@ -107,7 +132,9 @@ export const PLAN_NOT_INCLUDED = [
   "A sales call just to learn the price.",
 ];
 
+// Fix pass 1, Phase 2: body branches on site.inPersonInBozeman, so it lives
+// in the component (FounderNote.tsx) next to the flag, not here as a static
+// string -- this file only holds the one line that never changes.
 export const FOUNDER_NOTE = {
-  body: "I'm Sam, and I build BuzraReviews here in Bozeman. You can set yourself up in a few minutes, and if you run into any trouble, I'll help you get it set up myself.",
   signature: "Sam, founder of BuzraReviews",
 };
