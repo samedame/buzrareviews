@@ -58,6 +58,9 @@ export default function BozemanPage() {
           <h2 id="bozeman-form-heading" className="text-h2 text-ink">
             Ask Sam for a visit
           </h2>
+          <p className="text-body text-ink-2 mt-2">
+            Not in Bozeman? Sam can still set everything up with you online, over a call.
+          </p>
           <div className="mt-8">
             <ContactForm />
           </div>
