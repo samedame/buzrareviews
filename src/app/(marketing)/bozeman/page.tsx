@@ -56,7 +56,7 @@ export default function BozemanPage() {
       <section aria-labelledby="bozeman-form-heading" className="bg-mist py-16 sm:py-24">
         <Container className="max-w-xl">
           <h2 id="bozeman-form-heading" className="text-h2 text-ink">
-            Ask Sam for help
+            Set up a call with Sam
           </h2>
           <div className="mt-8">
             <ContactForm />
