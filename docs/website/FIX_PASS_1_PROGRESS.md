@@ -102,7 +102,15 @@ Bare domain is primary and returns 200; www redirects to it. Note: the redirect 
 - Updated `docs/website/CLAIMS.md`: the "who it fits" row now documents both flag states and points at `site.showHealthcare`; added a new row for the dental-marketing-hidden-but-page-still-live behavior; updated two rows' stale `/bozeman` references to `/setup`.
 - Full gate re-run: `tsc --noEmit` clean, scoped lint clean, `next build` exits 0. Full Playwright suite: 146 passed / 1 pre-existing failure (JS weight, unchanged) / 9 skipped (+3 from the old dental-switch test now correctly skipping at `showHealthcare: false`; confirmed via a scoped run that the new "dental is absent" test runs and passes on all 3 projects, exactly replacing those 3 in the pass count -- no net coverage loss).
 
-## Phase 5: Legal pages — not started
+## Phase 5: Legal pages — done
+
+- Issue 6. Both pages' "Last updated" set to October 1, 2026 (the run date).
+- Privacy: "Who we are" now reads `site.legalEntityName ? "operated by {entity}" : "built and run by Sam"`, plus "You can reach us at {contactEmail}" and the mailing address when set (verified rendered: with both currently `null`, it correctly falls back to "BuzraReviews is built and run by Sam, based in Bozeman, Montana." with no dangling "operated by" or empty address sentence). "Your choices" now ends with "by emailing us at {contactEmail}" instead of the old self-referential "using the details at the top of this page." Added the two new sentences to "Review request emails" and "Retention" verbatim from the spec. "Contact" rewritten to lead with the email, add the mailing address when set, and link "our setup page" (`/setup`) as a secondary option, instead of calling `/setup` "the contact form."
+- Terms: opens with "BuzraReviews is operated by {entity}." only when `legalEntityName` is set (currently omitted, correctly, since it's `null`). "Subscription and billing" now names "Manage billing" from the dashboard (Phase 8 builds the button) alongside emailing support, with the existing period-end/no-proration language unchanged. "SMS program terms"' support line changed from "use the contact form on our setup page" to "For help, reply HELP or email {contactEmail}" -- verified rendered correctly. "Contact" rewritten the same way as Privacy's.
+- Both pages' dash ban still applies (verified no em/en dashes in the new text) even though the banned-word lint is exempt for these two routes, per the existing harness.
+- Full gate re-run: `tsc --noEmit` clean, scoped lint clean, `next build` exits 0, full Playwright suite 146 passed / 1 pre-existing failure / 9 skipped (unchanged from Phase 4). Both pages' key new sentences confirmed via curl against the running build, not just read back from source.
+- Both pages are listed in the Phase 9 report as needing Sam's review, and ideally a lawyer's, per the spec.
+
 ## Phase 6: Honeypot accessibility — not started
 ## Phase 7: Unsubscribe + suppression — not started
 ## Phase 8: Dashboard — not started
