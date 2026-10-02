@@ -6,9 +6,18 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
 
+type EmailStatus = "sent" | "unsubscribed" | "suppression_check_failed" | "send_failed";
+
 type AddedCustomer = {
   email: string;
-  emailStatus: "sent" | "failed";
+  emailStatus: EmailStatus;
+};
+
+const STATUS_MESSAGE: Record<EmailStatus, string> = {
+  sent: "Email sent",
+  unsubscribed: "This customer asked not to get review requests from you, so we didn't send one.",
+  suppression_check_failed: "We couldn't send this review request. Please try again in a few minutes.",
+  send_failed: "Email failed",
 };
 
 export function CustomersClient() {
@@ -162,12 +171,19 @@ export function CustomersClient() {
             {added.map((customer, index) => (
               <li
                 key={`${customer.email}-${index}`}
-                className="flex items-center justify-between rounded-[var(--radius-control)] border border-line px-3 py-2 text-small"
+                className="flex flex-col gap-1 rounded-[var(--radius-control)] border border-line px-3 py-2 text-small"
               >
-                <span className="text-ink">{customer.email}</span>
-                <span className={customer.emailStatus === "sent" ? "text-meadow" : "text-brick"}>
-                  {customer.emailStatus === "sent" ? "Email sent" : "Email failed"}
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-ink">{customer.email}</span>
+                  <span className={customer.emailStatus === "sent" ? "text-meadow" : "text-brick"}>
+                    {customer.emailStatus === "sent" || customer.emailStatus === "send_failed"
+                      ? STATUS_MESSAGE[customer.emailStatus]
+                      : null}
+                  </span>
+                </div>
+                {(customer.emailStatus === "unsubscribed" || customer.emailStatus === "suppression_check_failed") && (
+                  <p className="text-brick">{STATUS_MESSAGE[customer.emailStatus]}</p>
+                )}
               </li>
             ))}
           </ul>

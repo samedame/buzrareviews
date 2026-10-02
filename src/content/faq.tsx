@@ -42,7 +42,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "what-customers-get",
     question: "What do my customers get?",
     answer:
-      "A short email from your business name with the subject “How was your visit to [your business]?” and a “Leave a review” button that opens your Google review form. No survey first and no hoops.",
+      "A short email from your business name with the subject “How was your visit to [your business]?” and a “Leave a review” button that opens your Google review form. No survey first and no hoops. Every email includes an unsubscribe link.",
   },
   {
     id: "post-for-me",
