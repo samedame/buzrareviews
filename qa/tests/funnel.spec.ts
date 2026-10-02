@@ -119,28 +119,6 @@ test.describe("mobile menu", () => {
   });
 });
 
-test.describe("contact form", () => {
-  test("shows the success message when /api/contact returns 200", async ({ page }) => {
-    await page.route("**/api/contact", (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) })
-    );
-    await page.goto("/setup", { waitUntil: "load" });
-    await page.fill("#contact-name", "Jamie Rivera");
-    await page.fill("#contact-business", "Bloom Salon");
-    await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Send my request" }).click();
-    await expect(page.getByText("Thanks! Sam will reach out to set up a time.")).toBeVisible();
-  });
-
-  test("shows the not-connected message when /api/contact returns 503", async ({ page }) => {
-    await page.route("**/api/contact", (route) =>
-      route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "not connected" }) })
-    );
-    await page.goto("/setup", { waitUntil: "load" });
-    await page.fill("#contact-name", "Jamie Rivera");
-    await page.fill("#contact-business", "Bloom Salon");
-    await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Send my request" }).click();
-    await expect(page.getByText("The form isn't connected yet.")).toBeVisible();
-  });
-});
+// Contact-form tests moved to qa/tests/contact.spec.ts (Phase 9), which
+// covers the same success/not-connected states plus the meeting-choice
+// field this phase added.

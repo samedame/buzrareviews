@@ -146,4 +146,16 @@ Issue 12. Every piece below verified against the real running build (not just re
 - **FAQ**: "Is there a contract? How do I cancel?" finalized to its last-word version: "...open your dashboard and click Manage billing, or email Sam at {contactEmail} and he'll take care of it." (supersedes the Phase 1 interim wording, which predated Manage billing existing).
 - Full gate re-run: `tsc --noEmit` clean, scoped lint clean, `next build` exits 0 (`/dashboard` still `○`, both new routes `ƒ`), full Playwright suite 146 passed / 1 pre-existing failure / 9 skipped (unchanged). Verified against the running build: the lost-link form and its honeypot render correctly (same innerText/Tab script as Phase 6, now targeting `/dashboard`), and `/dashboard`'s axe scan is still 0 violations with the new form and button present.
 
-## Phase 9: Tests, gates, report, push — not started
+## Phase 9: Tests, gates, report, push — done
+
+- New test files: `qa/fixtures.ts` (shared non-localhost-request-blocking fixture; named its fixture-provider callback `runWithPage` instead of the conventional `use` so `eslint-plugin-react-hooks` doesn't mistake it for a React Hook call), `metadata.spec.ts`, `redirects.spec.ts`, `contact.spec.ts`, `honeypot.spec.ts`, `healthcare.spec.ts`, `unsubscribe.spec.ts` (E2E + a Node-side token test), `email-render.spec.ts` (Node-side), `dashboard.spec.ts`.
+- Added `/unsubscribe` to `qa/routes.ts`'s `APP_ROUTES` so `pages.spec.ts` covers it (console errors, one h1, axe, copy lint) for free.
+- Removed the now-duplicate "contact form" describe block from `funnel.spec.ts` (superseded by the more thorough `contact.spec.ts`, which also checks the meeting-choice field).
+- **Two real test bugs found and fixed, not product bugs**: the "desktop nav Who it's for menu" test timed out on mobile/tablet (that nav item is `hidden lg:flex`, doesn't exist below desktop) and the "mobile menu" test timed out on desktop (the hamburger trigger is `lg:hidden`) -- both fixed with `test.skip(testInfo.project.name ...)` guards rather than loosening any assertion.
+- Full suite: 320 passed, 1 failed (JS weight, pre-existing, unchanged), 12 skipped. Re-ran the Impeccable anti-slop detector (`IMPECCABLE_BROWSER` pointed at Playwright's Chromium) against `/`, `/pricing`, `/for/salons`, `/setup`, and the codebase scan: exit 0, zero findings, both times. Re-ran Lighthouse: same two pre-existing exceptions as the original build (JS weight, mobile LCP variance), neither new, neither one of this pass's 12 issues. Re-confirmed the production redirect (`www` -> 307 -> bare domain -> 200) via `curl`, identical to the Phase 0 finding.
+- Wrote `docs/website/FIX_PASS_1_REPORT.md` with exactly the required headings and posted it in the conversation.
+- Deleted the throwaway `.env.local` (recreated several times across phases for build/test verification, per A4) for the last time; confirmed `git status` clean before pushing.
+
+## Final gate re-run summary (mirrors FIX_PASS_1_REPORT.md's Gates table)
+
+All PASS except two pre-existing, non-issue exceptions (JS weight, mobile LCP variance) carried over unchanged from the original build -- see the report for the full table and command-by-command evidence.

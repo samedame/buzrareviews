@@ -9,7 +9,7 @@ export const MARKETING_ROUTES = [
   "/terms",
 ];
 
-export const APP_ROUTES = ["/onboarding", "/customers", "/dashboard"];
+export const APP_ROUTES = ["/onboarding", "/customers", "/dashboard", "/unsubscribe"];
 
 export const ALL_ROUTES = [...MARKETING_ROUTES, ...APP_ROUTES];
 
