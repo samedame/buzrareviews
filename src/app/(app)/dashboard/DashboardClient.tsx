@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, type FormEvent } from "react";
+import { track } from "@vercel/analytics";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
-import { TextAreaField } from "@/components/ui/Field";
+import { Field, TextAreaField } from "@/components/ui/Field";
 import { Stars } from "@/components/ui/Stars";
 import { Icon } from "@/components/ui/Icon";
+import { site } from "@/config/site";
+
+const MANAGE_BILLING_STATUSES = new Set(["trialing", "active", "past_due"]);
 
 type Review = {
   id: string;
@@ -60,6 +64,15 @@ export function DashboardClient() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [justSubscribed, setJustSubscribed] = useState(false);
+  const [billingLoading, setBillingLoading] = useState(false);
+  const [billingError, setBillingError] = useState(false);
+
+  // Lost-link recovery.
+  const [recoveryStartedAt] = useState(() => Date.now());
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [recoveryCompany, setRecoveryCompany] = useState("");
+  const [recoveryLoading, setRecoveryLoading] = useState(false);
+  const [recoverySubmitted, setRecoverySubmitted] = useState(false);
 
   // Reply tone settings.
   const [replyTone, setReplyTone] = useState("");
@@ -201,6 +214,51 @@ export function DashboardClient() {
     }
   }
 
+  async function handleManageBilling() {
+    if (!businessId) return;
+    track("billing_portal_click");
+    setBillingError(false);
+    setBillingLoading(true);
+
+    try {
+      const response = await fetch("/api/billing-portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessId }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error ?? "Couldn't open billing.");
+      }
+
+      window.location.assign(data.url);
+    } catch {
+      setBillingError(true);
+      setBillingLoading(false);
+    }
+  }
+
+  async function handleRecoverySubmit(event: FormEvent) {
+    event.preventDefault();
+    track("dashboard_link_request");
+    setRecoveryLoading(true);
+
+    try {
+      await fetch("/api/dashboard-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: recoveryEmail.trim(), company: recoveryCompany, startedAt: recoveryStartedAt }),
+      });
+    } catch {
+      // The response is always the same generic message regardless of
+      // outcome, so a network error here doesn't need its own branch.
+    } finally {
+      setRecoveryLoading(false);
+      setRecoverySubmitted(true);
+    }
+  }
+
   async function handleSaveTone() {
     if (!businessId || !replyTone.trim()) return;
     setToneError(null);
@@ -256,7 +314,10 @@ export function DashboardClient() {
     }
   }
 
-  const isSubscribed = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+  // Widened to include "past_due" (issue 9): a past-due business still has
+  // a real subscription and needs Manage billing to fix its card, not the
+  // "Subscribe for $29/mo" flow meant for businesses that never subscribed.
+  const isSubscribed = Boolean(subscriptionStatus && MANAGE_BILLING_STATUSES.has(subscriptionStatus));
 
   return (
     <Container className="max-w-2xl py-16">
@@ -297,6 +358,48 @@ export function DashboardClient() {
         you can check back anytime.
       </p>
 
+      <div className="mt-8 rounded-[var(--radius-control)] border border-line px-4 py-4">
+        <h2 className="text-small font-semibold text-ink">Lost your link?</h2>
+        <p className="text-small text-ink-3 mt-1">
+          Enter the email you signed up with and we&apos;ll send your dashboard link again.
+        </p>
+
+        {recoverySubmitted ? (
+          <p className="mt-3 text-small text-ink-2">
+            If that email has a BuzraReviews account, we just sent the link. Check your inbox and spam folder.
+          </p>
+        ) : (
+          <form onSubmit={handleRecoverySubmit} className="mt-3 flex flex-col gap-3">
+            {/* Honeypot, same pattern as ContactForm (issue 11). */}
+            <div aria-hidden="true" className="invisible absolute -left-[9999px] h-px w-px overflow-hidden">
+              <label htmlFor="recoveryCompany">Company</label>
+              <input
+                type="text"
+                id="recoveryCompany"
+                tabIndex={-1}
+                autoComplete="off"
+                value={recoveryCompany}
+                onChange={(event) => setRecoveryCompany(event.target.value)}
+              />
+            </div>
+
+            <Field
+              id="recoveryEmail"
+              label="Your email"
+              type="email"
+              autoComplete="email"
+              value={recoveryEmail}
+              onChange={(event) => setRecoveryEmail(event.target.value)}
+              placeholder="you@yourbusiness.com"
+              required
+            />
+            <Button type="submit" variant="secondary" disabled={recoveryLoading}>
+              {recoveryLoading ? "Sending…" : "Email me my link"}
+            </Button>
+          </form>
+        )}
+      </div>
+
       {businessId && (
         <p className="mt-3 text-center text-small">
           <Link
@@ -320,9 +423,33 @@ export function DashboardClient() {
           )}
 
           {isSubscribed ? (
-            <p className="text-small text-ink-2">
-              {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} ($29/mo)
-            </p>
+            <>
+              <p className="text-small text-ink-2">
+                {subscriptionStatus === "trialing" ? "Free trial active" : "Subscription active"} ($29/mo)
+              </p>
+              {/* isSubscribed is already exactly this set of statuses. */}
+              <div className="mt-3 flex flex-col items-center gap-1">
+                <Button variant="secondary" onClick={handleManageBilling} disabled={billingLoading}>
+                  {billingLoading ? "Opening…" : "Manage billing"}
+                </Button>
+                <p className="text-small text-ink-3">Cancel, change your card, or see invoices.</p>
+                {billingError && (
+                  <p className="mt-1 text-small text-brick" role="alert">
+                    We couldn&apos;t open billing right now.
+                    {site.contactEmail && (
+                      <>
+                        {" "}
+                        Email Sam at{" "}
+                        <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+                          {site.contactEmail}
+                        </a>{" "}
+                        and he&apos;ll take care of it.
+                      </>
+                    )}
+                  </p>
+                )}
+              </div>
+            </>
           ) : (
             <>
               <p className="text-small text-ink-2">

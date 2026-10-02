@@ -77,7 +77,10 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "contract-cancel",
     question: "Is there a contract? How do I cancel?",
     answer: (
-      <>No contract. It&apos;s month to month. To cancel, email Sam at {emailSamLink()} and he&apos;ll take care of it.</>
+      <>
+        No contract. It&apos;s month to month. To cancel, open your dashboard and click Manage billing, or email
+        Sam at {emailSamLink()} and he&apos;ll take care of it.
+      </>
     ),
   },
   {

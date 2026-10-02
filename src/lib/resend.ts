@@ -9,6 +9,14 @@ if (!process.env.SENDING_DOMAIN) throw new Error('Missing SENDING_DOMAIN env var
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 
+// The only way back into a business's dashboard (no login/password), so
+// every email that carries this link -- the onboarding confirmation email
+// and the Phase 8 lost-link-recovery email -- must build it identically.
+export function buildDashboardLink(businessId: string, businessName: string): string {
+  const appUrl = process.env.APP_URL || 'https://buzrareviews.com';
+  return `${appUrl}/dashboard?businessId=${encodeURIComponent(businessId)}&businessName=${encodeURIComponent(businessName)}`;
+}
+
 export type SendReviewRequestResult =
   | { sent: true; emailId: string | null }
   | { sent: false; reason: 'unsubscribed' | 'suppression_check_failed' | 'send_failed' };
@@ -99,10 +107,7 @@ export async function sendConfirmationEmail(opts: {
   businessId: string;
 }) {
   const { to, businessName, businessId } = opts;
-  const appUrl = process.env.APP_URL || 'https://buzrareviews.com';
-  const dashboardLink = `${appUrl}/dashboard?businessId=${encodeURIComponent(
-    businessId
-  )}&businessName=${encodeURIComponent(businessName)}`;
+  const dashboardLink = buildDashboardLink(businessId, businessName);
 
   return resend.emails.send({
     from: `BuzraReviews <noreply@${process.env.SENDING_DOMAIN}>`,
@@ -121,5 +126,36 @@ export async function sendConfirmationEmail(opts: {
         <p>Thanks for trying it out!<br/>BuzraReviews</p>
       </div>
     `,
+  });
+}
+
+// Issue 8: lets an owner who lost their dashboard link get it re-sent.
+// Throttled per-business by the caller (api/dashboard-link/route.ts) using
+// businesses.dashboard_link_sent_at, not here, since the caller already
+// knows which business it's about to email.
+export async function sendDashboardLinkEmail(opts: {
+  to: string;
+  businessName: string;
+  businessId: string;
+}) {
+  const { to, businessName, businessId } = opts;
+  const dashboardLink = buildDashboardLink(businessId, businessName);
+
+  return resend.emails.send({
+    from: `BuzraReviews <noreply@${process.env.SENDING_DOMAIN}>`,
+    to,
+    subject: 'Your BuzraReviews dashboard link',
+    html: `
+      <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto;">
+        <p>Here's the link to your BuzraReviews dashboard for ${businessName}:</p>
+        <p style="text-align: center; margin: 24px 0;">
+          <a href="${dashboardLink}" style="display:inline-block;padding:12px 24px;background:#111827;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;">
+            Open your dashboard
+          </a>
+        </p>
+        <p>Bookmark it so you can come back anytime. If you didn't ask for this, you can ignore this email.</p>
+      </div>
+    `,
+    text: `Here's the link to your BuzraReviews dashboard for ${businessName}: ${dashboardLink}\n\nBookmark it so you can come back anytime. If you didn't ask for this, you can ignore this email.`,
   });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { track } from "@vercel/analytics";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { site } from "@/config/site";
@@ -48,6 +49,7 @@ export function UnsubscribeClient() {
 
       setBusinessName(data.business ?? null);
       setStatus("success");
+      track("unsubscribe_confirm");
     } catch {
       setStatus("error");
     }
