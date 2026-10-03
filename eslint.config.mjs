@@ -12,6 +12,12 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored agent tooling (plugins, skills), not our source -- mirrors
+    // the equivalent entries in .gitignore.
+    ".claude/**",
+    ".agents/**",
+    "qa-artifacts/**",
+    "docs/design/references/**",
   ]),
 ]);
 

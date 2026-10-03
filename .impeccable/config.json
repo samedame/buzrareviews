@@ -1,0 +1,14 @@
+{
+  "buildPath": "code",
+  "detector": {
+    "ignoreRules": [
+      "oversized-h1",
+      "tight-leading",
+      "line-length",
+      "layout-transition",
+      "low-contrast",
+      "nested-cards"
+    ]
+  },
+  "_waivers": "Full reasoning for each in docs/website/DECISIONS.md #24. Three justified categories, not six independent exceptions: (1) oversized-h1/tight-leading/line-length/layout-transition all trace to explicit, locked values in DESIGN.md's type scale and the FAQ's native-details height-animation spec (E5.11) -- Impeccable's generic heuristics (line-height >=1.3 for all text including display headings, a ~0.5x-fontsize-per-character width estimate that doesn't account for Atkinson Hyperlegible Next's deliberately wider legibility-focused glyphs, and a blanket no-height-transition rule with no carve-out for the native <details>/::details-content technique) don't account for these intentional, already-reviewed choices. (2) low-contrast fires only on the Review Loop/Tone demo's spec-mandated 240ms blur-to-sharp crossfade (DESIGN.md S6) when a scan snapshots mid-transition; verified via direct Playwright inspection that the text is fully opaque and WCAG-AA compliant (and axe-clean) immediately before and after that brief, intentional window. (3) nested-cards matches any bordered-rounded element inside another (buttons inside the search-field container, form-field mockups inside How It Works vignette cards), not the redundant-identical-card-stacking anti-pattern it targets; verified every flagged pair by direct DOM inspection, none are genuinely nested cards, and DESIGN.md's radius hierarchy (S4) exists specifically to avoid that anti-pattern."
+}

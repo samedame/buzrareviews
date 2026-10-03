@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const { data: business, error: bizError } = await supabaseAdmin
     .from('businesses')
-    .select('id, name, google_review_link')
+    .select('id, name, address, google_review_link')
     .eq('id', body.businessId)
     .single();
 
@@ -41,17 +41,29 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: custError.message }, { status: 500 });
   }
 
-  let emailResult;
-  let status = 'sent';
+  // Status values: 'sent', 'unsubscribed' (this address opted out from this
+  // business), 'suppression_check_failed' (failed closed, didn't send),
+  // 'send_failed' (a real Resend-side failure).
+  let status: string;
+  let emailId: string | null = null;
   try {
-    emailResult = await sendReviewRequestEmail({
+    const emailResult = await sendReviewRequestEmail({
       to: customer.email,
+      customerId: customer.id,
       customerName: customer.name ?? undefined,
+      businessId: business.id,
       businessName: business.name,
+      businessAddress: business.address ?? undefined,
       reviewLink: business.google_review_link,
     });
+    if (emailResult.sent) {
+      status = 'sent';
+      emailId = emailResult.emailId;
+    } else {
+      status = emailResult.reason;
+    }
   } catch (err) {
-    status = 'failed';
+    status = 'send_failed';
     // This was silently swallowed before, so a failed send left nothing to
     // debug. Resend's error (bad/unverified sending domain, invalid API
     // key, rate limit, etc.) now shows up in Vercel's function logs.
@@ -62,7 +74,7 @@ export async function POST(req: NextRequest) {
     business_id: business.id,
     customer_id: customer.id,
     status,
-    resend_email_id: emailResult?.data?.id ?? null,
+    resend_email_id: emailId,
   });
 
   return NextResponse.json({ customer, emailStatus: status }, { status: 201 });

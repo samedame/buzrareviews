@@ -6,11 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "qa:types": "next typegen && tsc --noEmit",
+    "qa:e2e": "playwright test -c qa/playwright.config.ts",
+    "qa:lh": "node qa/lighthouse.mjs",
+    "qa": "next build && npm run qa:e2e"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",
     "@supabase/supabase-js": "^2.117.2",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "motion": "^13.4.6",
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -19,6 +26,8 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
