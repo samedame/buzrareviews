@@ -10,7 +10,14 @@ export const SLUG_TO_DEMO_ID: Record<VerticalSlug, VerticalId> = {
   restaurants: "restaurant",
 };
 
-export type VerticalPoint = { title: string; body: string };
+export type VerticalPoint = {
+  title: string;
+  body: string;
+  // Fix pass 2, issue 1: set on the one point per page that cites a
+  // BrightLocal statistic, so the template can render the source line
+  // directly under it (not under the other two, non-statistic points).
+  hasSource?: boolean;
+};
 
 export type VerticalPageContent = {
   slug: VerticalSlug;
@@ -45,6 +52,7 @@ export const VERTICAL_PAGES: Record<VerticalSlug, VerticalPageContent> = {
       {
         title: "Fresh reviews win new clients.",
         body: "74% of people only care about reviews from the last three months. A request after every appointment keeps yours current.",
+        hasSource: true,
       },
     ],
     note: "Tip: set a tone like ‘Warm and short. Mention the stylist by name when the review does.’",
@@ -70,6 +78,7 @@ export const VERTICAL_PAGES: Record<VerticalSlug, VerticalPageContent> = {
       {
         title: "Recent reviews matter most.",
         body: "74% of people only care about reviews from the last three months. A request after each visit keeps yours current.",
+        hasSource: true,
       },
     ],
     note: "Healthcare offices have extra rules about what a reply can say. Keep replies general, and don't confirm that anyone is a patient. BuzraReviews doesn't give legal advice.",
@@ -95,6 +104,7 @@ export const VERTICAL_PAGES: Record<VerticalSlug, VerticalPageContent> = {
       {
         title: "Your voice, not a template.",
         body: "Generic, templated replies make 50% of people unlikely to choose a business. Each draft answers what that guest actually said.",
+        hasSource: true,
       },
     ],
     note: "Walk-in only, with no guest emails? BuzraReviews isn't the right fit yet.",

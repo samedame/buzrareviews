@@ -2,6 +2,7 @@ import { Container } from "@/components/ui/Container";
 import { Faq } from "@/components/ui/Faq";
 import { FinalCta } from "@/components/marketing/FinalCta";
 import { VerticalHero } from "@/components/marketing/VerticalHero";
+import { BrightLocalSource } from "@/components/marketing/BrightLocalSource";
 import { getFaqItems } from "@/content/faq";
 import { SLUG_TO_DEMO_ID, type VerticalPageContent } from "@/content/verticals";
 
@@ -25,6 +26,7 @@ export function VerticalPageTemplate({ content }: { content: VerticalPageContent
               <div key={point.title}>
                 <h3 className="text-h3 text-ink">{point.title}</h3>
                 <p className="text-body text-ink-2 mt-2">{point.body}</p>
+                {point.hasSource && <BrightLocalSource className="mt-2" />}
               </div>
             ))}
           </div>

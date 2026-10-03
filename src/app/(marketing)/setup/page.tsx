@@ -48,7 +48,12 @@ export default function SetupPage() {
               <ol className="mt-4 flex flex-col gap-3">
                 {SETUP_VISIT_STEPS.map((step) => (
                   <li key={step.number} className="flex gap-3 text-body text-ink-2">
-                    <span className="text-ink-3">{step.number}</span>
+                    {/* The <ol> already announces each item's position to
+                        assistive tech; this numeral is purely decorative
+                        and would otherwise be read a second time. */}
+                    <span className="text-ink-3" aria-hidden="true">
+                      {step.number}
+                    </span>
                     {step.title}
                   </li>
                 ))}

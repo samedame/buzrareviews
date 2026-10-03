@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { site } from "@/config/site";
+import { alt as ogImageAlt, size as ogImageSize, contentType as ogImageType } from "@/app/opengraph-image";
 
 // Fix pass 1, issue 4: every marketing page needs its own openGraph/twitter
 // metadata (Next shallow-replaces nested metadata objects per-segment, so a
@@ -43,17 +44,19 @@ export function pageMetadata({
       siteName: site.name,
       locale: "en_US",
       type: "website",
-      // Verified empirically (curl against the built HTML): once a page sets
-      // its own `openGraph` object, it fully replaces the root layout's --
-      // including the og:image the file-based src/app/opengraph-image.tsx
-      // convention injects there. Repeating it here is the fix the spec
-      // itself anticipated ("include it explicitly in the helper").
-      images: "/opengraph-image",
+      // Setting a page-level `openGraph` object replaces the root layout's
+      // entirely (confirmed empirically in Fix pass 1, and again here --
+      // removing this and relying on the file-based convention alone
+      // leaves every subpage with no og:image at all). Repeating the full
+      // set of fields here, imported from opengraph-image.tsx's own
+      // exports rather than duplicated as literals, so the two can't drift.
+      images: [{ url: `${site.url}/opengraph-image`, ...ogImageSize, type: ogImageType, alt: ogImageAlt }],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
+      images: [{ url: `${site.url}/opengraph-image`, ...ogImageSize, type: ogImageType, alt: ogImageAlt }],
     },
     ...(noindex && { robots: { index: false, follow: false } }),
   };

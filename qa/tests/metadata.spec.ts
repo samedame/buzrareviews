@@ -32,6 +32,20 @@ test.describe("metadata (issue 4)", () => {
       const ogImage = await page.locator('meta[property="og:image"]').getAttribute("content");
       expect(ogImage).toMatch(/^https:\/\//);
 
+      // Fix pass 2, problem 2: full share-image metadata, not just a bare
+      // og:image/twitter:image URL.
+      expect(ogImage).toMatch(/^https:\/\/buzrareviews\.com/);
+      await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
+      await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
+      await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute("content", "image/png");
+      const ogImageAlt = await page.locator('meta[property="og:image:alt"]').getAttribute("content");
+      expect(ogImageAlt).toBeTruthy();
+
+      const twitterImage = await page.locator('meta[name="twitter:image"]').getAttribute("content");
+      expect(twitterImage).toMatch(/^https:\/\/buzrareviews\.com/);
+      const twitterImageAlt = await page.locator('meta[name="twitter:image:alt"]').getAttribute("content");
+      expect(twitterImageAlt).toBeTruthy();
+
       const twitterTitle = await page.locator('meta[name="twitter:title"]').getAttribute("content");
       const twitterDescription = await page.locator('meta[name="twitter:description"]').getAttribute("content");
       expect(twitterTitle).toBeTruthy();

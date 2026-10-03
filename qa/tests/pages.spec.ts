@@ -64,6 +64,27 @@ for (const route of routesToTest) {
         .analyze();
 
       expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
+
+      // Fix pass 2, problem 3: the <ol> steps' visible numeral is
+      // aria-hidden, since the <ol> already announces each item's
+      // position -- confirm no list item's accessible text (ignoring
+      // aria-hidden content) still starts with the duplicated digit.
+      if (route === "/setup") {
+        const accessibleNames = await page.evaluate(() => {
+          function accessibleText(node: Node): string {
+            if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
+            const el = node as Element;
+            if (el.getAttribute?.("aria-hidden") === "true") return "";
+            return Array.from(el.childNodes).map(accessibleText).join("");
+          }
+          return Array.from(document.querySelectorAll("ol li")).map((li) => accessibleText(li).trim());
+        });
+
+        expect(accessibleNames.length).toBeGreaterThan(0);
+        for (const name of accessibleNames) {
+          expect(name, `list item accessible text: "${name}"`).not.toMatch(/^\d/);
+        }
+      }
     });
 
     test("copy lint: no em/en dashes, no banned phrases, internal links resolve", async ({ page, request }) => {
