@@ -4,12 +4,12 @@ export const MARKETING_ROUTES = [
   "/for/salons",
   "/for/dental",
   "/for/restaurants",
-  "/bozeman",
+  "/setup",
   "/privacy",
   "/terms",
 ];
 
-export const APP_ROUTES = ["/onboarding", "/customers", "/dashboard"];
+export const APP_ROUTES = ["/onboarding", "/customers", "/dashboard", "/unsubscribe"];
 
 export const ALL_ROUTES = [...MARKETING_ROUTES, ...APP_ROUTES];
 

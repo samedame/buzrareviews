@@ -24,7 +24,7 @@ export function emailSubject(businessName: string) {
 }
 
 export function emailGreeting(firstName?: string) {
-  return firstName ? `Hi ${firstName},` : "Hi,";
+  return firstName ? `Hi ${firstName},` : "Hi there,";
 }
 
 export function emailBody(businessName: string) {
@@ -41,7 +41,11 @@ export type VerticalId = "salon" | "dental" | "restaurant";
 
 export type DemoReview = {
   reviewerName: string;
-  customerFirstName?: string; // used to personalize the email card; omitted for dental (no names in replies)
+  // Used to personalize the EmailCard's greeting only. Separate from
+  // whether the reply text uses a name (dental's replies never do, per the
+  // healthcare reply tone) -- the request email is always addressed to a
+  // real person by name when one is known, dental included.
+  customerFirstName?: string;
   rating: number;
   text: string;
   reply: string;
@@ -92,6 +96,7 @@ export const VERTICAL_DEMOS: Record<VerticalId, VerticalDemo> = {
     reviewArrivedTime: "4:45 PM",
     primaryReview: {
       reviewerName: "Dana L.",
+      customerFirstName: "Dana",
       rating: 5,
       text: "Everyone was kind and explained everything. First time I haven't dreaded going to the dentist.",
       reply:

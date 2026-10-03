@@ -1,4 +1,4 @@
-export const BOZEMAN_VISIT_STEPS = [
+export const SETUP_VISIT_STEPS = [
   { number: 1, title: "Find and confirm your Google listing." },
   { number: 2, title: "Pick a reply tone that sounds like you." },
   { number: 3, title: "Add a few recent customers and send your first review requests." },

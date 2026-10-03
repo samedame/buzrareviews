@@ -2,20 +2,22 @@ import type { Metadata } from "next";
 import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 import { SUBSCRIPTION_PRICE_USD_CENTS, TRIAL_PERIOD_DAYS } from "@/lib/pricing";
 import { site } from "@/config/site";
+import { pageMetadata } from "@/config/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
   description: "The terms for using BuzraReviews, including billing and SMS program terms.",
-  alternates: { canonical: "/terms" },
-};
+  path: "/terms",
+});
 
 export default function TermsPage() {
   const price = Math.round(SUBSCRIPTION_PRICE_USD_CENTS / 100);
 
   return (
-    <LegalLayout title="Terms of Service" lastUpdated="September 30, 2026">
+    <LegalLayout title="Terms of Service" lastUpdated="October 1, 2026">
       <LegalSection heading="Agreement and eligibility">
         <p>
+          {site.legalEntityName && <>BuzraReviews is operated by {site.legalEntityName}. </>}
           These terms apply to any business, and any person authorized to act on a business&apos;s behalf, that
           uses BuzraReviews. By using BuzraReviews, you agree to these terms.
         </p>
@@ -44,8 +46,17 @@ export default function TermsPage() {
         <p>
           BuzraReviews costs ${price} a month after a {TRIAL_PERIOD_DAYS}-day free trial. A card is collected
           through Stripe when your trial starts, and your subscription renews monthly after that. You can cancel
-          anytime by contacting us; cancellation takes effect at the end of your current billing period, and we
-          don&apos;t prorate refunds for partial months.
+          anytime from your dashboard using Manage billing
+          {site.contactEmail && (
+            <>
+              , or by emailing us at{" "}
+              <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+                {site.contactEmail}
+              </a>
+            </>
+          )}
+          . Cancellation takes effect at the end of your current billing period, and we don&apos;t prorate refunds
+          for partial months.
         </p>
       </LegalSection>
 
@@ -72,17 +83,26 @@ export default function TermsPage() {
           These terms apply if and when BuzraReviews offers text messaging. Program name: &quot;BuzraReviews
           review requests.&quot; Description: a text message asking a customer of a participating business to
           leave a Google review after a visit. Frequency: one message per visit recorded by the business. Message
-          and data rates may apply. Reply STOP to opt out, or HELP for help. Carriers are not liable for delayed
+          and data rates may apply. Reply STOP to opt out.
+          {site.contactEmail ? (
+            <>
+              {" "}
+              For help, reply HELP or email{" "}
+              <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+                {site.contactEmail}
+              </a>
+              .
+            </>
+          ) : (
+            " For help, reply HELP."
+          )}{" "}
+          Carriers are not liable for delayed
           or undelivered messages. Consent to receive messages is not a condition of any purchase, and opt-in
           data is never shared with third parties for marketing purposes (see our{" "}
           <a href="/privacy" className="text-meadow underline underline-offset-[3px]">
             Privacy Policy
           </a>
-          ). For support, use the contact form on our{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            Bozeman page
-          </a>
-          .
+          ).
         </p>
       </LegalSection>
 
@@ -134,19 +154,20 @@ export default function TermsPage() {
 
       <LegalSection heading="Contact">
         <p>
-          Questions about these terms can go through the contact form on{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            our Bozeman page
-          </a>
           {site.contactEmail && (
             <>
-              {" "}
-              or to{" "}
+              Email us at{" "}
               <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
                 {site.contactEmail}
               </a>
+              .{" "}
             </>
           )}
+          {site.legalMailingAddress && <>Our mailing address is {site.legalMailingAddress}. </>}
+          You can also use the form on our{" "}
+          <a href="/setup" className="text-meadow underline underline-offset-[3px]">
+            setup page
+          </a>
           .
         </p>
       </LegalSection>

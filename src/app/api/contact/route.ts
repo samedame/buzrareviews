@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { resend } from '@/lib/resend';
 
 // POST /api/contact
-// Online setup-help requests from ContactForm on /bozeman. Honeypot + timing
+// Setup-help requests from ContactForm on /setup. Honeypot + timing
 // check silently drop spam (return 200 with no email sent, so bots can't
 // tell they were filtered). Never called for real in QA -- always mocked.
 const ContactSchema = z.object({
@@ -13,6 +13,9 @@ const ContactSchema = z.object({
   phone: z.string().trim().max(30).optional(),
   message: z.string().trim().max(1000).optional(),
   company: z.string().optional(),
+  // Only sent when the page shows the meeting-choice radios
+  // (site.inPersonInBozeman); absent entirely when it's calls-only.
+  meeting: z.enum(["call", "in_person"]).optional(),
   startedAt: z.number(),
 });
 
@@ -26,7 +29,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Please check the form and try again.' }, { status: 400 });
   }
 
-  const { name, business, email, phone, message, company, startedAt } = parsed.data;
+  const { name, business, email, phone, message, company, meeting, startedAt } = parsed.data;
 
   const looksLikeSpam = Boolean(company) || Date.now() - startedAt < MIN_SUBMIT_MS;
   if (looksLikeSpam) {
@@ -42,15 +45,23 @@ export async function POST(req: NextRequest) {
     `Business: ${business}`,
     `Email: ${email}`,
     phone ? `Phone: ${phone}` : null,
+    meeting ? `Meeting: ${meeting === 'in_person' ? 'In person in Bozeman' : 'On a call'}` : null,
     message ? `Message: ${message}` : null,
   ].filter((line): line is string => line !== null);
+
+  const subject =
+    meeting === 'call'
+      ? `Setup request (call): ${business}`
+      : meeting === 'in_person'
+        ? `Setup request (in person): ${business}`
+        : `Setup request: ${business}`;
 
   try {
     await resend.emails.send({
       from: `BuzraReviews <noreply@${process.env.SENDING_DOMAIN}>`,
       to: process.env.CONTACT_TO_EMAIL,
       replyTo: email,
-      subject: `In-person setup request: ${business}`,
+      subject,
       text: lines.join('\n'),
     });
   } catch (err) {

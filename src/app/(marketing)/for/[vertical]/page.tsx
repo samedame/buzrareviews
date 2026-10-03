@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { VerticalPageTemplate } from "@/components/marketing/VerticalPageTemplate";
 import { VERTICAL_PAGES, VERTICAL_SLUGS, type VerticalSlug } from "@/content/verticals";
+import { site } from "@/config/site";
+import { pageMetadata } from "@/config/metadata";
 
 export const dynamicParams = false;
 
@@ -24,11 +26,15 @@ export async function generateMetadata({
   const content = getContent(vertical);
   if (!content) return {};
 
-  return {
+  return pageMetadata({
     title: content.metaTitle,
     description: content.metaDescription,
-    alternates: { canonical: `/for/${content.slug}` },
-  };
+    path: `/for/${content.slug}`,
+    // Dental stays reachable by direct link (per the showHealthcare flag's
+    // own rules) but shouldn't be indexed or linked to from search/social
+    // while the HIPAA question is unresolved.
+    noindex: content.slug === "dental" && !site.showHealthcare,
+  });
 }
 
 export default async function VerticalPage({ params }: { params: Promise<{ vertical: string }> }) {

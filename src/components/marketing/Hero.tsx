@@ -6,6 +6,11 @@ import { Icon } from "@/components/ui/Icon";
 import { BusinessSearchForm } from "@/components/marketing/BusinessSearchForm";
 import { ReviewLoopDemo } from "@/components/marketing/ReviewLoopDemo";
 import { FACTS_ROW } from "@/content/home";
+import { site } from "@/config/site";
+
+const AUDIENCE_LINE = site.showHealthcare
+  ? "For salons, dental offices, restaurants, and every shop with one front door."
+  : "For salons, barbershops, restaurants, and every shop with one front door.";
 
 export function Hero() {
   const [query, setQuery] = useState("");
@@ -15,9 +20,7 @@ export function Hero() {
       <Container>
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-6">
           <div className="lg:col-span-6">
-            <p className="text-small text-ink-2 max-w-[48ch]">
-              For salons, dental offices, restaurants, and every shop with one front door.
-            </p>
+            <p className="text-small text-ink-2 max-w-[48ch]">{AUDIENCE_LINE}</p>
             <h1 id="hero-heading" className="text-hero text-ink mt-4">
               Ask every customer. Answer every review.
             </h1>

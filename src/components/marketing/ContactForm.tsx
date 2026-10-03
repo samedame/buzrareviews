@@ -8,7 +8,7 @@ import { site } from "@/config/site";
 
 type Status = "idle" | "submitting" | "success" | "error" | "not-connected";
 
-export function ContactForm() {
+export function ContactForm({ showMeetingChoice = false }: { showMeetingChoice?: boolean }) {
   const [startedAt] = useState(() => Date.now());
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -26,6 +26,7 @@ export function ContactForm() {
       phone: String(data.get("phone") ?? "") || undefined,
       message: String(data.get("message") ?? "") || undefined,
       company: String(data.get("company") ?? ""),
+      meeting: showMeetingChoice ? String(data.get("meeting") ?? "call") : undefined,
       startedAt,
     };
 
@@ -86,7 +87,15 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+      {/* Honeypot: aria-hidden + tabIndex=-1 keep it out of assistive tech
+          and the tab order, and `invisible` (visibility:hidden) keeps its
+          label out of the rendered text a sighted/AT user could otherwise
+          perceive (position:absolute alone, e.g. -left-[9999px], still
+          counts as rendered text to .innerText() -- verified directly
+          against the running build, not assumed). Real bots read the DOM's
+          attributes/textContent regardless of computed visibility, so this
+          doesn't reduce the honeypot's effectiveness against them. */}
+      <div aria-hidden="true" className="invisible absolute -left-[9999px] h-px w-px overflow-hidden">
         <label htmlFor="company-field">Company</label>
         <input type="text" id="company-field" name="company" tabIndex={-1} autoComplete="off" />
       </div>
@@ -97,6 +106,20 @@ export function ContactForm() {
       <Field id="contact-phone" label="Phone (optional)" name="phone" type="tel" autoComplete="tel" />
       <TextAreaField id="contact-message" label="Message (optional)" name="message" rows={4} />
 
+      {showMeetingChoice && (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-small font-medium text-ink">How should we meet?</legend>
+          <label className="flex items-center gap-2 text-small text-ink-2">
+            <input type="radio" name="meeting" value="call" defaultChecked />
+            On a call
+          </label>
+          <label className="flex items-center gap-2 text-small text-ink-2">
+            <input type="radio" name="meeting" value="in_person" />
+            In person in Bozeman
+          </label>
+        </fieldset>
+      )}
+
       {status === "error" && (
         <p role="alert" className="text-small text-brick">
           {errorMessage}
@@ -104,7 +127,7 @@ export function ContactForm() {
       )}
 
       <Button type="submit" size="large" disabled={status === "submitting"}>
-        {status === "submitting" ? "Sending…" : "Set up a call with Sam"}
+        {status === "submitting" ? "Sending…" : "Send my request"}
       </Button>
     </form>
   );

@@ -1,35 +1,33 @@
 import type { Metadata } from "next";
 import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 import { site } from "@/config/site";
+import { pageMetadata } from "@/config/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description: "How BuzraReviews collects, uses, and protects information.",
-  alternates: { canonical: "/privacy" },
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" lastUpdated="September 30, 2026">
+    <LegalLayout title="Privacy Policy" lastUpdated="October 1, 2026">
       <LegalSection heading="Who we are">
         <p>
-          BuzraReviews is built and run by {site.founderName}, based in {site.city}. If you have a question about
-          this policy or about your information, you can reach us through the contact form on{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            our Bozeman page
-          </a>
-          {site.contactEmail ? (
+          {site.legalEntityName
+            ? `BuzraReviews is operated by ${site.legalEntityName}, based in ${site.city}.`
+            : `BuzraReviews is built and run by ${site.founderName}, based in ${site.city}.`}
+          {site.contactEmail && (
             <>
               {" "}
-              or by email at{" "}
+              You can reach us at{" "}
               <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
                 {site.contactEmail}
               </a>
               .
             </>
-          ) : (
-            "."
           )}
+          {site.legalMailingAddress && <> Our mailing address is {site.legalMailingAddress}.</>}
         </p>
       </LegalSection>
 
@@ -63,10 +61,12 @@ export default function PrivacyPage() {
 
       <LegalSection heading="Review request emails">
         <p>Review request emails are sent on behalf of the business a recipient visited, not on behalf of BuzraReviews. If a recipient wants that business, or us, to stop emailing them, they can ask either one and we will honor it.</p>
+        <p>Every review request email includes an unsubscribe link. If you use it, that business can no longer send you review requests through BuzraReviews. We keep a record of your email address and the business so your request is honored.</p>
       </LegalSection>
 
       <LegalSection heading="Retention">
         <p>We keep information for as long as a business&apos;s account is active, plus a reasonable period afterward in case the business wants to come back or we need the records for billing or legal reasons.</p>
+        <p>Unsubscribe records are kept for as long as needed to honor them.</p>
       </LegalSection>
 
       <LegalSection heading="Security">
@@ -78,7 +78,21 @@ export default function PrivacyPage() {
       </LegalSection>
 
       <LegalSection heading="Your choices">
-        <p>You can ask to access, correct, or delete the information we hold about you by contacting us using the details at the top of this page.</p>
+        <p>
+          You can ask to access, correct, or delete the information we hold about you
+          {site.contactEmail ? (
+            <>
+              {" "}
+              by emailing us at{" "}
+              <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+                {site.contactEmail}
+              </a>
+              .
+            </>
+          ) : (
+            "."
+          )}
+        </p>
       </LegalSection>
 
       <LegalSection heading="Changes to this policy">
@@ -87,19 +101,20 @@ export default function PrivacyPage() {
 
       <LegalSection heading="Contact">
         <p>
-          Questions about this policy can go through the contact form on{" "}
-          <a href="/bozeman" className="text-meadow underline underline-offset-[3px]">
-            our Bozeman page
-          </a>
           {site.contactEmail && (
             <>
-              {" "}
-              or to{" "}
+              Email us at{" "}
               <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
                 {site.contactEmail}
               </a>
+              .{" "}
             </>
           )}
+          {site.legalMailingAddress && <>Our mailing address is {site.legalMailingAddress}. </>}
+          You can also use the form on our{" "}
+          <a href="/setup" className="text-meadow underline underline-offset-[3px]">
+            setup page
+          </a>
           .
         </p>
       </LegalSection>

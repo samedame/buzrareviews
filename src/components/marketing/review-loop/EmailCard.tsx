@@ -64,6 +64,15 @@ export function EmailCard({
           {signoffName}
         </m.span>
       </p>
+      {/* Mirrors the real email's unsubscribe footer (issue 12) so the demo
+          stays truthful. "Unsubscribe" is styled like a link but is plain
+          text, never a real href -- this is Example content, not a live
+          control. Rendered at its final size on first paint, so nothing
+          shifts when it "appears." */}
+      <p className="text-card-micro text-ink-3 mt-3">
+        Sent on behalf of {businessName}.{" "}
+        <span className="text-meadow underline underline-offset-[3px]">Unsubscribe</span>
+      </p>
     </div>
   );
 }

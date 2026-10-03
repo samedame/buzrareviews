@@ -6,13 +6,14 @@ import { PlanCard } from "@/components/marketing/PlanCard";
 import { FinalCta } from "@/components/marketing/FinalCta";
 import { PLAN_INCLUDED_DETAILED, PLAN_NOT_INCLUDED } from "@/content/home";
 import { getFaqItems, PRICING_FAQ_ORDER } from "@/content/faq";
+import { pageMetadata } from "@/config/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Pricing: $29 a month, no contract",
   description:
     "One plan with a 14-day free trial: review request emails, a daily Google review check, and drafted replies in your tone. Cancel anytime.",
-  alternates: { canonical: "/pricing" },
-};
+  path: "/pricing",
+});
 
 export default function PricingPage() {
   return (

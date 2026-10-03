@@ -6,10 +6,11 @@ import { track } from "@vercel/analytics";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
 import { VisuallyHidden } from "@/components/ui/VisuallyHidden";
+import { site } from "@/config/site";
 
 const WHO_ITS_FOR = [
   { label: "Salons and barbershops", href: "/for/salons" },
-  { label: "Dental offices", href: "/for/dental" },
+  ...(site.showHealthcare ? [{ label: "Dental offices", href: "/for/dental" }] : []),
   { label: "Restaurants and cafes", href: "/for/restaurants" },
 ];
 
@@ -86,8 +87,8 @@ export function MobileMenu() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/bozeman" onClick={closeMenu} className="text-nav text-ink py-3">
-              Bozeman
+            <Link href="/setup" onClick={closeMenu} className="text-nav text-ink py-3">
+              Setup help
             </Link>
             <Link href="/dashboard" onClick={closeMenu} className="text-nav text-ink py-3">
               Your dashboard

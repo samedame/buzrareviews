@@ -1,6 +1,6 @@
 import { Container } from "@/components/ui/Container";
-import { Icon } from "@/components/ui/Icon";
-import { WHY_IT_MATTERS_STATS, BRIGHTLOCAL_SOURCE } from "@/content/home";
+import { BrightLocalSource } from "@/components/marketing/BrightLocalSource";
+import { WHY_IT_MATTERS_STATS } from "@/content/home";
 
 // Highlights the leading percentage in a stat sentence as a large inline
 // numeral (DESIGN.md: "a large sentence with the number inline"), without
@@ -43,13 +43,7 @@ export function WhyItMatters() {
           ))}
         </div>
 
-        <a
-          href={BRIGHTLOCAL_SOURCE.href}
-          className="mt-8 inline-flex items-center gap-1 text-small text-meadow underline underline-offset-[3px]"
-        >
-          {BRIGHTLOCAL_SOURCE.label}
-          <Icon name="external-link" size={14} />
-        </a>
+        <BrightLocalSource className="mt-8" />
       </Container>
     </section>
   );

@@ -1,9 +1,26 @@
+import type { ReactNode } from "react";
+import { site } from "@/config/site";
+
 export type FaqItem = {
   id: string;
   question: string;
-  answer: string;
+  answer: ReactNode;
   link?: { label: string; href: string };
 };
+
+// A handful of answers need a real mailto link mid-sentence (issue 1: "email
+// Sam" must be a visible, clickable address, not plain text). `answer` is a
+// ReactNode specifically so these can stay inline instead of forcing every
+// answer through a link-per-item structure Faq.tsx doesn't otherwise have.
+function emailSamLink() {
+  return site.contactEmail ? (
+    <a href={`mailto:${site.contactEmail}`} className="text-meadow underline underline-offset-[3px]">
+      {site.contactEmail}
+    </a>
+  ) : (
+    "Sam"
+  );
+}
 
 // Appendix X3. Home uses all of these in this order except "how-many".
 // /pricing uses: trial, contract, how-many, what-customers-get.
@@ -25,7 +42,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "what-customers-get",
     question: "What do my customers get?",
     answer:
-      "A short email from your business name with the subject “How was your visit to [your business]?” and a “Leave a review” button that opens your Google review form. No survey first and no hoops.",
+      "A short email from your business name with the subject “How was your visit to [your business]?” and a “Leave a review” button that opens your Google review form. No survey first and no hoops. Every email includes an unsubscribe link.",
   },
   {
     id: "post-for-me",
@@ -54,12 +71,17 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: "free-trial",
     question: "How does the free trial work?",
     answer:
-      "Start your trial from your dashboard. You'll enter a card through Stripe and get 14 days free. You won't be charged until the trial ends, and if you cancel before then, you pay nothing.",
+      "Find your business and add your email. We'll email you a link to your dashboard, and you start your 14-day trial from there by entering a card through Stripe. You won't be charged until the trial ends, and if you cancel before then, you pay nothing.",
   },
   {
     id: "contract-cancel",
     question: "Is there a contract? How do I cancel?",
-    answer: "No contract. It's month to month, and you can cancel anytime. Just email Sam and it's done.",
+    answer: (
+      <>
+        No contract. It&apos;s month to month. To cancel, open your dashboard and click Manage billing, or email
+        Sam at {emailSamLink()} and he&apos;ll take care of it.
+      </>
+    ),
   },
   {
     id: "text-messages",
@@ -69,8 +91,9 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "good-fit",
     question: "Is my kind of business a good fit?",
-    answer:
-      "If you have one location, customers who can leave you a Google review, and their email addresses, yes. Salons, barbershops, dental offices, restaurants, cafes, auto shops, and chiropractors all fit. BuzraReviews isn't built for businesses with many locations.",
+    answer: site.showHealthcare
+      ? "If you have one location, customers who can leave you a Google review, and their email addresses, yes. Salons, barbershops, dental offices, restaurants, cafes, auto shops, and chiropractors all fit. BuzraReviews isn't built for businesses with many locations."
+      : "If you have one location, customers who can leave you a Google review, and their email addresses, yes. Salons, barbershops, restaurants, cafes, auto shops, and similar local businesses all fit. BuzraReviews isn't built for businesses with many locations.",
   },
   {
     id: "how-many",
@@ -80,9 +103,10 @@ export const FAQ_ITEMS: FaqItem[] = [
   {
     id: "whos-behind",
     question: "Who's behind BuzraReviews?",
-    answer:
-      "Sam, who builds and runs it in Bozeman, Montana. If you get stuck, he'll set it up with you online.",
-    link: { label: "Get help from Sam", href: "/bozeman" },
+    answer: site.inPersonInBozeman
+      ? "Sam, who builds and runs it in Bozeman, Montana. If you get stuck, he'll set it up with you on a call, or in person if you're in or around Bozeman."
+      : "Sam, who builds and runs it in Bozeman, Montana. If you get stuck, he'll set it up with you on a call.",
+    link: { label: "Get setup help", href: "/setup" },
   },
 ];
 

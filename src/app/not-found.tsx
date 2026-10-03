@@ -1,8 +1,16 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { site } from "@/config/site";
+import { pageMetadata } from "@/config/metadata";
+
+export const metadata: Metadata = pageMetadata({
+  title: "Page not found",
+  description: "The page you're looking for doesn't exist or has moved.",
+  noindex: true,
+});
 
 export default function NotFound() {
   return (

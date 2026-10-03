@@ -12,7 +12,7 @@ import { site } from "@/config/site";
 
 const WHO_ITS_FOR = [
   { label: "Salons and barbershops", href: "/for/salons" },
-  { label: "Dental offices", href: "/for/dental" },
+  ...(site.showHealthcare ? [{ label: "Dental offices", href: "/for/dental" }] : []),
   { label: "Restaurants and cafes", href: "/for/restaurants" },
 ];
 
@@ -102,8 +102,8 @@ export function SiteHeader() {
             Pricing
           </Link>
           <WhoItsForMenu />
-          <Link href="/bozeman" className="text-nav text-ink">
-            Bozeman
+          <Link href="/setup" className="text-nav text-ink">
+            Setup help
           </Link>
         </nav>
 

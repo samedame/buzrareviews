@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { site } from "@/config/site";
 
 test.describe("hero search personalization and submit", () => {
   test("typing updates the demo email subject and reply sign-off", async ({ page }) => {
@@ -66,6 +67,7 @@ test.describe("tone demo", () => {
 
 test.describe("review loop vertical switch", () => {
   test("switching to Dental office shows Northfork Family Dental with no reviewer name in the reply", async ({ page }) => {
+    test.skip(!site.showHealthcare, "Dental is hidden from the home page's switch while site.showHealthcare is false");
     await page.goto("/", { waitUntil: "load" });
     // Mobile shows the short label ("Dental") per DESIGN.md's "short labels
     // on mobile" spec; desktop/tablet show the full label ("Dental office").
@@ -75,6 +77,12 @@ test.describe("review loop vertical switch", () => {
     await expect(page.getByText("Northfork Family Dental").first()).toBeVisible();
     const reply = page.getByText("Thank you for taking the time to share this.");
     await expect(reply).toBeVisible();
+  });
+
+  test("dental is absent from the switch while site.showHealthcare is false", async ({ page }) => {
+    test.skip(site.showHealthcare, "This checks the flag-off behavior specifically");
+    await page.goto("/", { waitUntil: "load" });
+    await expect(page.getByRole("radio", { name: /^Dental( office)?$/ })).toHaveCount(0);
   });
 
   test("Copy reply puts the exact demo reply on the clipboard and shows Copied", async ({ page, context, browserName }) => {
@@ -111,28 +119,6 @@ test.describe("mobile menu", () => {
   });
 });
 
-test.describe("contact form", () => {
-  test("shows the success message when /api/contact returns 200", async ({ page }) => {
-    await page.route("**/api/contact", (route) =>
-      route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) })
-    );
-    await page.goto("/bozeman", { waitUntil: "load" });
-    await page.fill("#contact-name", "Jamie Rivera");
-    await page.fill("#contact-business", "Bloom Salon");
-    await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Set up a call with Sam" }).click();
-    await expect(page.getByText("Thanks! Sam will reach out to set up a time.")).toBeVisible();
-  });
-
-  test("shows the not-connected message when /api/contact returns 503", async ({ page }) => {
-    await page.route("**/api/contact", (route) =>
-      route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ error: "not connected" }) })
-    );
-    await page.goto("/bozeman", { waitUntil: "load" });
-    await page.fill("#contact-name", "Jamie Rivera");
-    await page.fill("#contact-business", "Bloom Salon");
-    await page.fill("#contact-email", "jamie@example.com");
-    await page.getByRole("button", { name: "Set up a call with Sam" }).click();
-    await expect(page.getByText("The form isn't connected yet.")).toBeVisible();
-  });
-});
+// Contact-form tests moved to qa/tests/contact.spec.ts (Phase 9), which
+// covers the same success/not-connected states plus the meeting-choice
+// field this phase added.
